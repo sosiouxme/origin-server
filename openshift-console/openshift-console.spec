@@ -9,7 +9,7 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.3
+Version:   0.0.4
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -145,6 +145,16 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 0.0.4-1
+- BZ872492 - Should stop openshfit-console service when uninstall openshift-
+  console package. (calfonso@redhat.com)
+- Merge pull request #797 from calfonso/master (openshift+bot@redhat.com)
+- Adding - to spec to make tito releasers work (calfonso@redhat.com)
+- Setting the gemdir in the rpm spec (calfonso@redhat.com)
+- BZ871786 - The urls of "My Applications","Create Application","Help","My
+  Account" are not correct. *Modifying the app context path for the error pages
+  (calfonso@redhat.com)
+
 * Wed Oct 31 2012 Adam Miller <admiller@redhat.com> 0.0.3-1
 - Bug 871705 - renaming a sample conf file for consistency
   (bleanhar@redhat.com)
