@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-broker-util
-Version:        1.0.3
+Version:        1.0.4
 Release:        1%{?dist}
 Group:          Network/Daemons
 License:        ASL 2.0
@@ -67,6 +67,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-accept-broker.8.gz
 
 %changelog
+* Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.4-1
+- oo-accept-broker: fix check_datastore_mongo (miciah.masters@gmail.com)
+- oo-accept-broker: add support for remote-user auth (miciah.masters@gmail.com)
+
 * Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-1
 - oo-accept-broker: RHEL6 compatibility (miciah.masters@gmail.com)
 
