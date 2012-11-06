@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-broker-util
-Version:        1.0.2
+Version:        1.0.3
 Release:        1%{?dist}
 Group:          Network/Daemons
 License:        ASL 2.0
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-accept-broker.8.gz
 
 %changelog
+* Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-1
+- oo-accept-broker: RHEL6 compatibility (miciah.masters@gmail.com)
+
 * Wed Oct 31 2012 Adam Miller <admiller@redhat.com> 1.0.2-1
 - Fixes for LiveCD build (kraman@gmail.com)
 - move broker/node utils to /usr/sbin/ everywhere (admiller@redhat.com)
