@@ -7,7 +7,7 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version: 1.0.2
+Version: 1.0.3
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -167,6 +167,10 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-1
+- BZ872523 - set quota for gear failed if the device name is too long
+  (bleanhar@redhat.com)
+
 * Wed Oct 31 2012 Adam Miller <admiller@redhat.com> 1.0.2-1
 - Fixes for LiveCD build (kraman@gmail.com)
 
