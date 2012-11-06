@@ -2,7 +2,7 @@
 
 Summary:   Provides php-5.3 support
 Name:      openshift-origin-cartridge-php-5.3
-Version: 1.0.2
+Version: 1.0.3
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -116,6 +116,9 @@ rm -rf %{buildroot}
 %doc %{cartridgedir}/LICENSE
 
 %changelog
+* Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-1
+- Removing the mongo cartridge rependencies for now (bleanhar@redhat.com)
+
 * Thu Nov 01 2012 Adam Miller <admiller@redhat.com> 1.0.2-1
 - Fix README to use new variable scheme + fixup wrong variable in diy cart.
   (ramr@redhat.com)
