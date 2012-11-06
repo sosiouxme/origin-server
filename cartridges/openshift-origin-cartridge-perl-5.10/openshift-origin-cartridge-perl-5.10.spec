@@ -2,7 +2,7 @@
 
 Summary:   Provides mod_perl support
 Name:      openshift-origin-cartridge-perl-5.10
-Version: 1.0.1
+Version: 1.0.2
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -113,6 +113,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.2-1
+- Removing the mongo cartridge rependencies for now (bleanhar@redhat.com)
+
 * Tue Oct 30 2012 Adam Miller <admiller@redhat.com> 1.0.1-1
 - bumping specs to at least 1.0.0 (dmcphers@redhat.com)
 
