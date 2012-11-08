@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-node-util
-Version:        1.0.3
+Version:        1.0.4
 Release:        1%{?dist}
 
 Group:          Network/Daemons
@@ -100,6 +100,13 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/restorecon /usr/sbin/oo-restorer* || :
 
 %changelog
+* Thu Nov 08 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.4-1
+- updates to oo-accept-node, oo-admin-chk to detect bad node PUBLIC_* settings.
+  * pull changeable node.conf settings to top; remove unused; comment * add
+  various oo-accept-node checks for node.conf sanity, including PUBLIC_HOSTNAME
+  * have oo-admin-chk validate the PUBLIC_HOSTNAME and PUBLIC_IP of all nodes
+  and check for dupes (lmeyer@redhat.com)
+
 * Thu Nov 01 2012 Adam Miller <admiller@redhat.com> 1.0.3-1
 - Fix for bug# 869748 (rpenta@redhat.com)
 
