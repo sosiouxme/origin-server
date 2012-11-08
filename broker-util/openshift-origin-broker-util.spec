@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-broker-util
-Version:        1.0.4
+Version:        1.0.5
 Release:        1%{?dist}
 Group:          Network/Daemons
 License:        ASL 2.0
@@ -67,6 +67,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-accept-broker.8.gz
 
 %changelog
+* Thu Nov 08 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
+- updates to oo-accept-node, oo-admin-chk to detect bad node PUBLIC_* settings.
+  * pull changeable node.conf settings to top; remove unused; comment * add
+  various oo-accept-node checks for node.conf sanity, including PUBLIC_HOSTNAME
+  * have oo-admin-chk validate the PUBLIC_HOSTNAME and PUBLIC_IP of all nodes
+  and check for dupes (lmeyer@redhat.com)
+
 * Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.4-1
 - oo-accept-broker: fix check_datastore_mongo (miciah.masters@gmail.com)
 - oo-accept-broker: add support for remote-user auth (miciah.masters@gmail.com)
