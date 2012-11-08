@@ -7,7 +7,7 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version: 1.0.3
+Version: 1.0.4
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -167,6 +167,17 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Thu Nov 08 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.4-1
+- Bug 874587 - CLOUD_NAME in /etc/openshift/node.conf does not work
+  (bleanhar@redhat.com)
+- updates to oo-accept-node, oo-admin-chk to detect bad node PUBLIC_* settings.
+  * pull changeable node.conf settings to top; remove unused; comment * add
+  various oo-accept-node checks for node.conf sanity, including PUBLIC_HOSTNAME
+  * have oo-admin-chk validate the PUBLIC_HOSTNAME and PUBLIC_IP of all nodes
+  and check for dupes (lmeyer@redhat.com)
+- BZ873970, BZ873966 - disabling HTTP TRACE for the Broker, Nodes and Console
+  (bleanhar@redhat.com)
+
 * Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-1
 - BZ872523 - set quota for gear failed if the device name is too long
   (bleanhar@redhat.com)
