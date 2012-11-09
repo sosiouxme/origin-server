@@ -7,7 +7,7 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version: 1.0.4
+Version: 1.0.5
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -167,6 +167,9 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Fri Nov 09 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
+- Fix for Bug 874712 (jhonce@redhat.com)
+
 * Thu Nov 08 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.4-1
 - Bug 874587 - CLOUD_NAME in /etc/openshift/node.conf does not work
   (bleanhar@redhat.com)
