@@ -2,7 +2,7 @@
 
 Summary:   OpenShift common cartridge components
 Name:      openshift-origin-cartridge-abstract
-Version:   1.0.4
+Version:   1.0.5
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -70,6 +70,9 @@ rm -rf $RPM_BUILD_ROOT
 %post
 
 %changelog
+* Mon Nov 12 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
+- Fix for Bug 874445 (jhonce@redhat.com)
+
 * Fri Nov 02 2012 Adam Miller <admiller@redhat.com> 1.0.4-1
 - Unnecessary to run as system_u and causes test failures.
   (rmillner@redhat.com)
