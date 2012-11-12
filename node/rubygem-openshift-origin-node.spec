@@ -7,7 +7,7 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version: 1.0.5
+Version: 1.0.6
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -167,6 +167,10 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Mon Nov 12 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.6-1
+- BZ 872379: Dead code cleanup to fix mount parsing problem.
+  (rmillner@redhat.com)
+
 * Fri Nov 09 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
 - Fix for Bug 874712 (jhonce@redhat.com)
 
