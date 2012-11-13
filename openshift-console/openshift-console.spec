@@ -9,7 +9,7 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.4
+Version:   0.0.5
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -145,6 +145,12 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Tue Nov 13 2012 Chris Alfonso <calfonso@redhat.com> 0.0.5-1
+- Removing version from minitest in openshift-console gemspec
+  (calfonso@redhat.com)
+- BZ873970, BZ873966 - disabling HTTP TRACE for the Broker, Nodes and Console
+  (bleanhar@redhat.com)
+
 * Tue Nov 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 0.0.4-1
 - BZ872492 - Should stop openshfit-console service when uninstall openshift-
   console package. (calfonso@redhat.com)
