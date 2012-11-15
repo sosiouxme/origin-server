@@ -5,7 +5,7 @@
 
 Summary:        Cloud Development Controller
 Name:           rubygem-%{gemname}
-Version: 1.0.4
+Version: 1.0.7
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -81,6 +81,14 @@ rm -rf %{buildroot}
 %{ruby_sitelib}/%{gemname}.rb
 
 %changelog
+* Thu Nov 15 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.7-1
+- Bug 873992 - [onpremise][Client]Should delete all the prompts about
+  mongodb-2.2 cartridge. (bleanhar@redhat.com)
+
+* Thu Nov 15 2012 Brenton Leanhardt <bleanhar@redhat.com>
+- Bug 873992 - [onpremise][Client]Should delete all the prompts about
+  mongodb-2.2 cartridge. (bleanhar@redhat.com)
+
 * Fri Nov 02 2012 Adam Miller <admiller@redhat.com> 1.0.4-1
 - Fix name server cache: query up the chain to find dns resolver nameservers
   (rpenta@redhat.com)
