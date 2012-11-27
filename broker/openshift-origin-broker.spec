@@ -3,7 +3,7 @@
 
 Summary:   OpenShift Origin broker components
 Name:      openshift-origin-broker
-Version:   1.0.1
+Version:   1.0.2
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -171,6 +171,9 @@ chcon -R -t httpd_var_run_t %{brokerdir}/httpd/run
 /sbin/restorecon -R -v /var/run
 
 %changelog
+* Tue Nov 27 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.2-1
+- Bug 878270 - everyone read user_action.log (bleanhar@redhat.com)
+
 * Fri Nov 09 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.1-1
 - BZ873970, BZ873966 - disabling HTTP TRACE for the Broker, Nodes and Console
   (bleanhar@redhat.com)
