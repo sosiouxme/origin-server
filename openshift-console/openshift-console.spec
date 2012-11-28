@@ -9,7 +9,7 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.5
+Version:   0.0.6
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -145,6 +145,9 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Wed Nov 28 2012 Chris Alfonso <calfonso@redhat.com> 0.0.6-1
+- Enterprise styling of openshift-console (calfonso@redhat.com)
+
 * Tue Nov 13 2012 Chris Alfonso <calfonso@redhat.com> 0.0.5-1
 - Removing version from minitest in openshift-console gemspec
   (calfonso@redhat.com)
