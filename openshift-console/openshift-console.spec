@@ -9,7 +9,7 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.6
+Version:   0.0.7
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -145,6 +145,13 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Fri Nov 30 2012 Chris Alfonso <calfonso@redhat.com> 0.0.7-1
+- ldap sample config was out of date on the passthrough name
+  (calfonso@redhat.com)
+- BZ874520 - There is no domain_suffix displayed at the end of app url...
+  (calfonso@redhat.com)
+- Removing unused boiler plate index.html from console (calfonso@redhat.com)
+
 * Wed Nov 28 2012 Chris Alfonso <calfonso@redhat.com> 0.0.6-1
 - Enterprise styling of openshift-console (calfonso@redhat.com)
 
