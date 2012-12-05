@@ -9,7 +9,7 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.7
+Version:   0.0.8
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -145,6 +145,12 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Wed Dec 05 2012 Chris Alfonso <calfonso@redhat.com> 0.0.8-1
+- Additional OSE web console styling (calfonso@redhat.com)
+- BZ878754 No CSRF attack protection in console (calfonso@redhat.com)
+- BZ873940 - The rpm package openshift-console should delete the temp file
+  (calfonso@redhat.com)
+
 * Fri Nov 30 2012 Chris Alfonso <calfonso@redhat.com> 0.0.7-1
 - ldap sample config was out of date on the passthrough name
   (calfonso@redhat.com)
