@@ -1,8 +1,10 @@
 ---
 logo-24-inside.png: logo-24-inside-24db6524b2aaca0721cfe334d9ef8099.png
-rails.png: rails-3d9fa1f54ff60bbc14462f41df83b5af.png
+mts.png: mts-6258ccd025f515e2b2fd0ce9d92dd310.png
+redhat.png: redhat-9e7dc7b484be43f2c43fb371e3b609d7.png
+stars.png: stars-f08b435aa0ab9aefe1f6abb533323b0f.png
 application.js: application-5e02bd1b6667fffb92273334af740fe0.js
-application.css: application-11df4469d7381d263fddfa5f742bc537.css
+application.css: application-27136e10fbce900464440dd078c88b1d.css
 cartridge-edge.gif: cartridge-edge-8dc16f3e3f124fee23d9162bd29f736c.gif
 console/arrow-down.png: console/arrow-down-6f916309b8fe9fc4f6fac037bda19c37.png
 console/console-sprite.png: console/console-sprite-3b69a66c5d8aff52fa2dd92fc74c9db2.png
@@ -12,6 +14,6 @@ loader.gif: loader-5a2141569e438427bd7abbeb8ba2df86.gif
 sprite-vert.png: sprite-vert-61bde6ab5ae99b6d36e9ad567c714386.png
 console.js: console-cda0a080246a50c5df9e0c1dedda9c48.js
 common.css: common-26838a7fa7f2998c930b0c11fdac76d8.css
-origin.css: origin-0ba842fc9733a994718578aed4fcf18b.css
+origin.css: origin-8d0975ee0c81ae752e7ebce53f650db8.css
 MIT-LICENSE.txt: MIT-LICENSE-da9e5cd18a83f3718ea92ece57d54eac.txt
 modernizr.min.js: modernizr.min-8bb4e7a407c7157e8ecdc555827d25a7.js

@@ -21,6 +21,6 @@ module Console::ConsoleHelper
   end
 
   def product_title
-    'OpenShift Origin'
+    'OpenShift Enterprise by Red Hat'
   end
 end
