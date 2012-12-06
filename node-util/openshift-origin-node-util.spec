@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-node-util
-Version:        1.0.5
+Version:        1.0.6
 Release:        1%{?dist}
 
 Group:          Network/Daemons
@@ -98,6 +98,9 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/restorecon /usr/sbin/oo-restorer* || :
 
 %changelog
+* Thu Dec 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.6-1
+- Removing oo-setup-node from Enterprise (bleanhar@redhat.com)
+
 * Mon Nov 12 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
 - Fix for Bug 874445 (jhonce@redhat.com)
 - don't require CLOUD_NAME (since it's gone anyway) (lmeyer@redhat.com)
