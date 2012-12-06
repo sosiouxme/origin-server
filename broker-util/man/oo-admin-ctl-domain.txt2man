@@ -44,10 +44,9 @@ EXAMPLE
   -t ssh-rsa -k example_key
   
 SEE ALSO
-  complete-origin-setup(8), oo-admin-ctl-district(8),
-  oo-admin-move(8), oo-admin-chk(8), oo-accept-broker(8), oo-admin-ctl-app(8),
-  oo-admin-ctl-template(8), oo-admin-ctl-domain(8),
-  oo-admin-ctl-user(8), oo-register-dns(8)
+  oo-admin-ctl-district(8), oo-admin-move(8), oo-admin-chk(8),
+  oo-accept-broker(8), oo-admin-ctl-app(8), oo-admin-ctl-template(8),
+  oo-admin-ctl-domain(8), oo-admin-ctl-user(8), oo-register-dns(8)
  
 AUTHOR
   Adam Miller <admiller@redhat.com> - man page written for OpenShift Origin 
