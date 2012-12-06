@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-broker-util
-Version:        1.0.5
+Version:        1.0.6
 Release:        1%{?dist}
 Group:          Network/Daemons
 License:        ASL 2.0
@@ -61,6 +61,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-accept-broker.8.gz
 
 %changelog
+* Thu Dec 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.6-1
+- Removing references to complete-origin-setup (bleanhar@redhat.com)
+- Removing oo-setup-broker and oo-setup-bind from Enterprise
+  (bleanhar@redhat.com)
+
 * Thu Nov 08 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
 - updates to oo-accept-node, oo-admin-chk to detect bad node PUBLIC_* settings.
   * pull changeable node.conf settings to top; remove unused; comment * add
