@@ -34,7 +34,6 @@ cp oo-* %{buildroot}%{_sbindir}/
 mkdir -p %{buildroot}%{_mandir}/man8/
 cp man/*.8 %{buildroot}%{_mandir}/man8/
 mkdir -p %{buildroot}/usr/share/openshift/kickstarts
-cp kickstart/openshift-origin-remix.ks %{buildroot}/usr/share/openshift/kickstarts
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -48,10 +47,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,-,-) %{_sbindir}/oo-admin-ctl-user
 %attr(0755,-,-) %{_sbindir}/oo-admin-move
 %attr(0755,-,-) %{_sbindir}/oo-register-dns
-%attr(0755,-,-) %{_sbindir}/oo-setup-bind
-%attr(0755,-,-) %{_sbindir}/oo-setup-broker
 %attr(0755,-,-) %{_sbindir}/oo-accept-broker
-/usr/share/openshift/kickstarts/openshift-origin-remix.ks
 
 %doc LICENSE
 %{_mandir}/man8/oo-admin-chk.8.gz
@@ -62,8 +58,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-admin-ctl-user.8.gz
 %{_mandir}/man8/oo-admin-move.8.gz
 %{_mandir}/man8/oo-register-dns.8.gz
-%{_mandir}/man8/oo-setup-bind.8.gz
-%{_mandir}/man8/oo-setup-broker.8.gz
 %{_mandir}/man8/oo-accept-broker.8.gz
 
 %changelog
