@@ -33,7 +33,6 @@ cp oo-* %{buildroot}%{_sbindir}/
 
 mkdir -p %{buildroot}%{_mandir}/man8/
 cp man/*.8 %{buildroot}%{_mandir}/man8/
-mkdir -p %{buildroot}/usr/share/openshift/kickstarts
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -47,6 +46,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,-,-) %{_sbindir}/oo-admin-move
 %attr(0755,-,-) %{_sbindir}/oo-register-dns
 %attr(0755,-,-) %{_sbindir}/oo-accept-broker
+%attr(0755,-,-) %{_sbindir}/oo-accept-systems
 
 %doc LICENSE
 %{_mandir}/man8/oo-admin-chk.8.gz
@@ -57,6 +57,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-admin-move.8.gz
 %{_mandir}/man8/oo-register-dns.8.gz
 %{_mandir}/man8/oo-accept-broker.8.gz
+%{_mandir}/man8/oo-accept-systems.8.gz
 
 %changelog
 * Fri Dec 07 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.8-1
