@@ -9,7 +9,7 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.8
+Version:   0.0.9
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -145,6 +145,10 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Fri Dec 07 2012 Brenton Leanhardt <bleanhar@redhat.com> 0.0.9-1
+- BZ876937 - Return "FAILED" if trying to stop openshift-console which is
+  already stopped (bleanhar@redhat.com)
+
 * Wed Dec 05 2012 Chris Alfonso <calfonso@redhat.com> 0.0.8-1
 - Additional OSE web console styling (calfonso@redhat.com)
 - BZ878754 No CSRF attack protection in console (calfonso@redhat.com)
