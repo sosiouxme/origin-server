@@ -3,7 +3,7 @@
 
 Summary:   OpenShift Origin broker components
 Name:      openshift-origin-broker
-Version:   1.0.2
+Version:   1.0.3
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -171,6 +171,8 @@ chcon -R -t httpd_var_run_t %{brokerdir}/httpd/run
 /sbin/restorecon -R -v /var/run
 
 %changelog
+* Fri Dec 07 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-1
+- BZ876937
 * Tue Nov 27 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.2-1
 - Bug 878270 - everyone read user_action.log (bleanhar@redhat.com)
 
