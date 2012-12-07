@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-broker-util
-Version:        1.0.7
+Version:        1.0.8
 Release:        1%{?dist}
 Group:          Network/Daemons
 License:        ASL 2.0
@@ -59,6 +59,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-accept-broker.8.gz
 
 %changelog
+* Fri Dec 07 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.8-1
+- BZ873765 -  typo in description of man page for oo-admin-ctl-app
+  (bleanhar@redhat.com)
+
 * Thu Dec 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.7-1
 - Bug 873768 - removing oo-admin-ctl-template (bleanhar@redhat.com)
 
