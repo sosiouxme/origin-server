@@ -5,7 +5,7 @@
 
 Summary:        OpenShift plugin for mcollective service
 Name:           rubygem-%{gemname}
-Version: 1.0.2
+Version: 1.0.3
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -80,6 +80,10 @@ rm -rf %{buildroot}
 %{ruby_sitelib}/%{gemname}.rb
 
 %changelog
+* Sun Dec 09 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-1
+- BZ876465  Embedding scalable app (php) with jenkins fails to create a new
+  builder (calfonso@redhat.com)
+
 * Thu Nov 15 2012 Luke Meyer <lmeyer@redhat.com> 1.0.2-1
 - comment and set correct defaults in openshift-origin-msg-broker-
   mcollective.conf.example (lmeyer@redhat.com)
