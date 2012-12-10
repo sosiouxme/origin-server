@@ -9,7 +9,7 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.9
+Version:   0.0.10
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -145,6 +145,10 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Mon Dec 10 2012 Chris Alfonso <calfonso@redhat.com> 0.0.10-1
+- BZ877158 -  No "log out" button exists for the web console when using basic
+  auth (calfonso@redhat.com)
+
 * Fri Dec 07 2012 Brenton Leanhardt <bleanhar@redhat.com> 0.0.9-1
 - BZ876937 - Return "FAILED" if trying to stop openshift-console which is
   already stopped (bleanhar@redhat.com)
