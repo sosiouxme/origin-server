@@ -3,6 +3,8 @@
 require 'rubygems'
 require 'getoptlong'
 
+CTL_APP_COMMANDS = "(start|stop|force-stop|restart|status|destroy|force-destroy)"
+
 def usage
     puts <<USAGE
 == Synopsis
@@ -19,7 +21,7 @@ Options:
 -a|--app     <application>
     Application name  (alphanumeric) (required)
 -c|--command <command>
-    (start|stop|force-stop|restart|status|destroy|force-destroy) (required)
+    #{CTL_APP_COMMANDS} (required)
 -b|--bypass
     Ignore warnings
 -h|--help
@@ -144,6 +146,10 @@ when "destroy"
   
   reply.append app.cleanup_and_delete
   reply.resultIO << "Successfully destroyed application: #{app.name}" if reply.resultIO.string.empty?
+else
+  puts "Command must be one of: #{CTL_APP_COMMANDS}"
+  usage
+  exit 255
 end
 
 puts "DEBUG OUTPUT:\n#{reply.debugIO.string}\n" unless reply.debugIO.string.empty?
