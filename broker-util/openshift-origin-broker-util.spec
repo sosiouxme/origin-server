@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-broker-util
-Version:        1.0.9
+Version:        1.0.10
 Release:        1%{?dist}
 Group:          Network/Daemons
 License:        ASL 2.0
@@ -60,6 +60,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-accept-systems.8.gz
 
 %changelog
+* Tue Dec 11 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.10-1
+- BZ876644 - oo-register-dns is hardcoded to add entries to a BIND server at
+  127.0.0.1 (bleanhar@redhat.com)
+
 * Tue Dec 11 2012 Luke Meyer <lmeyer@redhat.com> 1.0.9-1
 - oo-accept-* changes for PUBLIC_* node settings and others. US3215 revisiting
   US3036 (lmeyer@redhat.com)
