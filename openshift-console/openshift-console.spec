@@ -61,6 +61,10 @@ mkdir -p %{buildroot}%{consoledir}/httpd/conf
 mkdir -p %{buildroot}%{consoledir}/httpd/conf.d
 mkdir -p %{buildroot}%{consoledir}/log
 mkdir -p %{buildroot}%{consoledir}/tmp
+mkdir -p %{buildroot}%{consoledir}/tmp/cache
+mkdir -p %{buildroot}%{consoledir}/tmp/pids
+mkdir -p %{buildroot}%{consoledir}/tmp/sessions
+mkdir -p %{buildroot}%{consoledir}/tmp/sockets
 mkdir -p %{buildroot}%{consoledir}/run
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 mkdir -p %{buildroot}%{_sysconfdir}/openshift
@@ -97,11 +101,21 @@ fi
 
 %files
 %defattr(0640,apache,apache,0750)
-%attr(0750,apache,apache) %{consoledir}/script
+%{openshiftconfigdir}
+%attr(0644,-,-) %ghost %{consoledir}/log/production.log
+%attr(0644,-,-) %ghost %{consoledir}/log/development.log
+%attr(0750,-,-) %{consoledir}/script
+%attr(0750,-,-) %{consoledir}/tmp
+%attr(0750,-,-) %{consoledir}/tmp/cache
+%attr(0750,-,-) %{consoledir}/tmp/pids
+%attr(0750,-,-) %{consoledir}/tmp/sessions
+%attr(0750,-,-) %{consoledir}/tmp/sockets
+%dir %attr(0750,-,-) %{consoledir}/httpd/conf.d
 %{consoledir}
 %{htmldir}/console
-%{openshiftconfigdir}
-%{_sysconfdir}/openshift/console.conf
+%config(noreplace) %{consoledir}/config/environments/production.rb
+%config(noreplace) %{consoledir}/config/environments/development.rb
+%config(noreplace) %{_sysconfdir}/openshift/console.conf
 
 %defattr(0640,root,root,0750)
 %if %{with_systemd}
