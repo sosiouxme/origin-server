@@ -2,7 +2,7 @@
 
 Summary:   Provides ruby rack support running on Phusion Passenger
 Name:      openshift-origin-cartridge-ruby-1.9-scl
-Version: 1.0.4
+Version: 1.0.5
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -206,6 +206,9 @@ rm -rf %{buildroot}
 %doc %{cartridgedir}/LICENSE
 
 %changelog
+* Tue Dec 11 2012 Chris Alfonso <calfonso@redhat.com> 1.0.5-1
+- Removing spaces from zone lookup in threaddump script (calfonso@redhat.com)
+
 * Tue Dec 11 2012 Chris Alfonso <calfonso@redhat.com> 1.0.4-1
 - BZ855264 - Can't 'rhc app tail' ruby app error_log file when the server's
   timezone is not EST. (calfonso@redhat.com)
