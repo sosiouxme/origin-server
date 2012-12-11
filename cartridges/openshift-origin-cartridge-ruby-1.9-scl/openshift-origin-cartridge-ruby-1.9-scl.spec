@@ -2,7 +2,7 @@
 
 Summary:   Provides ruby rack support running on Phusion Passenger
 Name:      openshift-origin-cartridge-ruby-1.9-scl
-Version: 1.0.3
+Version: 1.0.4
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -206,6 +206,10 @@ rm -rf %{buildroot}
 %doc %{cartridgedir}/LICENSE
 
 %changelog
+* Tue Dec 11 2012 Chris Alfonso <calfonso@redhat.com> 1.0.4-1
+- BZ855264 - Can't 'rhc app tail' ruby app error_log file when the server's
+  timezone is not EST. (calfonso@redhat.com)
+
 * Thu Nov 01 2012 Adam Miller <admiller@redhat.com> 1.0.3-1
 - Merge pull request #803 from ramr/master (openshift+bot@redhat.com)
 - Fix README to use new variable scheme + fixup wrong variable in diy cart.
