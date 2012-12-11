@@ -7,7 +7,7 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version: 1.0.7
+Version: 1.0.8
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -167,6 +167,10 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Tue Dec 11 2012 Luke Meyer <lmeyer@redhat.com> 1.0.8-1
+- oo-accept-* changes for PUBLIC_* node settings and others. US3215 revisiting
+  US3036 (lmeyer@redhat.com)
+
 * Wed Nov 14 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.7-1
 - Fix for Bug 875949 (jhonce@redhat.com)
 
