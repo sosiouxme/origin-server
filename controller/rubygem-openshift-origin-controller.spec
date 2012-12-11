@@ -5,7 +5,7 @@
 
 Summary:        Cloud Development Controller
 Name:           rubygem-%{gemname}
-Version: 1.0.7
+Version: 1.0.8
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -81,6 +81,10 @@ rm -rf %{buildroot}
 %{ruby_sitelib}/%{gemname}.rb
 
 %changelog
+* Tue Dec 11 2012 Luke Meyer <lmeyer@redhat.com> 1.0.8-1
+- create :default_gear_capabilities conf key for setting default gear
+  capabilities a user has at creation (lmeyer@redhat.com)
+
 * Thu Nov 15 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.7-1
 - Bug 873992 - [onpremise][Client]Should delete all the prompts about
   mongodb-2.2 cartridge. (bleanhar@redhat.com)
