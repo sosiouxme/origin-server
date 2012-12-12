@@ -2,7 +2,7 @@
 
 Summary:   Provides ruby rack support running on Phusion Passenger
 Name:      openshift-origin-cartridge-ruby-1.9-scl
-Version: 1.0.5
+Version: 1.0.6
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -206,6 +206,10 @@ rm -rf %{buildroot}
 %doc %{cartridgedir}/LICENSE
 
 %changelog
+* Wed Dec 12 2012 Chris Alfonso <calfonso@redhat.com> 1.0.6-1
+- Automatic commit of package [openshift-origin-cartridge-ruby-1.9-scl] release
+  [1.0.5-1]. (calfonso@redhat.com)
+
 * Tue Dec 11 2012 Chris Alfonso <calfonso@redhat.com> 1.0.5-1
 - Removing spaces from zone lookup in threaddump script (calfonso@redhat.com)
 
