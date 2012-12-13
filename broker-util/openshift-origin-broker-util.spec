@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-broker-util
-Version:        1.0.11
+Version:        1.0.12
 Release:        1%{?dist}
 Group:          Network/Daemons
 License:        ASL 2.0
@@ -60,6 +60,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-accept-systems.8.gz
 
 %changelog
+* Thu Dec 13 2012 Luke Meyer <lmeyer@redhat.com> 1.0.12-1
+- put title on man pages (lmeyer@redhat.com)
+- oo-admin-chk and man page tweaks while looking at BZ874799 and BZ875657
+  (lmeyer@redhat.com)
+- BZ874750 & BZ874751 fix oo-accept-broker man page; remove useless code and
+  options also give friendly advice during FAILs - why not? BZ874757 make man
+  page and options match (lmeyer@redhat.com)
+- save on the number of rails console calls being made (lmeyer@redhat.com)
+
 * Tue Dec 11 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.11-1
 - Bug 874845 - oo-admin-ctl-app accepts garbage for a command and returns
   success (bleanhar@redhat.com)
