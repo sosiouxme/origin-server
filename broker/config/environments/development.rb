@@ -42,7 +42,7 @@ Broker::Application.configure do
   hp = conf.get("MONGO_HOST_PORT", "localhost:27017")
   if !hp
     raise "Broker is missing Mongo configuration."
-  elif replica_sets
+  elsif replica_sets
     # The string should be of the following form:
     #
     #   host-1:port-1 host-2:port-2 ...
