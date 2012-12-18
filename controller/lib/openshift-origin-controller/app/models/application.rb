@@ -3,7 +3,7 @@ require 'syslog'
 require 'shellwords'
 
 class Application < OpenShift::Cartridge
-  attr_accessor :user, :creation_time, :uuid, :aliases, :cart_data, 
+  attr_accessor :user, :creation_time, :uuid, :aliases, :cart_data,
                 :state, :group_instance_map, :comp_instance_map, :conn_endpoints_list,
                 :domain, :group_override_map, :working_comp_inst_hash,
                 :working_group_inst_hash, :configure_order, :start_order,
@@ -19,9 +19,9 @@ class Application < OpenShift::Cartridge
   DEFAULT_NODE_PROFILE = "small"
   UNSCALABLE_FRAMEWORKS = ["jenkins-1.4", "diy-0.1"]
   SCALABLE_EMBEDDED_CARTS = ["mysql-5.1", "mongodb-2.2", "postgresql-8.4", "jenkins-client-1.4"]
-  
+
   validate :extended_validator
-  
+
   validates_each :name, :allow_nil =>false do |record, attribute, val|
     if !(val =~ /\A[A-Za-z0-9]+\z/)
       record.errors.add attribute, {:message => "Invalid #{attribute} specified", :exit_code => 105}
@@ -29,12 +29,12 @@ class Application < OpenShift::Cartridge
     if val and val.length > APP_NAME_MAX_LENGTH
       record.errors.add attribute, {:message => "The supplied application name is too long. (Max permitted length: #{APP_NAME_MAX_LENGTH} characters)", :exit_code => 105}
     end
-    Rails.logger.debug "Checking to see if application name is black listed"    
+    Rails.logger.debug "Checking to see if application name is black listed"
     if OpenShift::ApplicationContainerProxy.blacklisted?(val)
       record.errors.add attribute, {:message => "The supplied application name is not allowed", :exit_code => 105}
     end
   end
-  
+
   validates_each :node_profile, :allow_nil =>true do |record, attribute, val|
     allowed_sizes=OpenShift::ApplicationContainerProxy.valid_gear_sizes(record.user)
     unless allowed_sizes.include? val
@@ -59,7 +59,7 @@ class Application < OpenShift::Cartridge
     self.uuid = uuid || OpenShift::Model.gen_uuid
     self.scalable = will_scale
     self.ngears = 0
-    
+
     if template.nil?
       if self.scalable
         descriptor_hash = YAML.load(template_scalable_app(app_name, framework))
@@ -68,7 +68,7 @@ class Application < OpenShift::Cartridge
       else
         from_descriptor({"Name"=>app_name})
         self.requires_feature = []
-        self.requires_feature << framework unless framework.nil?      
+        self.requires_feature << framework unless framework.nil?
       end
     else
       template_descriptor = YAML.load(template.descriptor_yaml)
@@ -82,9 +82,9 @@ class Application < OpenShift::Cartridge
     end
     self.categories -= ["cartridge"]
   end
-  
+
   def node_profile
-    # node_profile can be nil for older data.  Should migrate everything to have a node_profile 
+    # node_profile can be nil for older data.  Should migrate everything to have a node_profile
     # with the next major migration.  Although technically node_profile shouldn't even be on application.
     if @node_profile.nil?
       return DEFAULT_NODE_PROFILE
@@ -129,7 +129,7 @@ class Application < OpenShift::Cartridge
       self.requires_feature << feature
     end
   end
-  
+
   def template_scalable_app(app_name, framework)
     return "
 Name: #{app_name}
@@ -145,7 +145,7 @@ Groups:
   web:
     Components:
       web: web
-GroupOverrides: 
+GroupOverrides:
   - [\"proxy\", \"proxy/haproxy-1.4\"]
   - [\"proxy\", \"proxy/#{framework}\"]
   - [\"web\", \"web/#{framework}\"]
@@ -198,7 +198,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     end
     app
   end
-  
+
   # Find an applications to which user has access
   # @param [CloudUser] user
   # @return [Array<Application>]
@@ -216,7 +216,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     end
     apps
   end
-  
+
   def self.find_by_gear_uuid(gear_uuid)
     hash = OpenShift::DataStore.instance.find_by_gear_uuid(gear_uuid)
     return nil unless hash
@@ -244,7 +244,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     end
     return app
   end
-  
+
   def self.hash_to_obj(hash)
     domain = nil
     if hash["domain"]
@@ -254,19 +254,19 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     app.domain = domain
     app
   end
-  
+
   # @overload Application.get_available_cartridges(cart_type)
   #   @deprecated
   #   Returns List of names of available cartridges of specified type
   #   @param [String] cart_type Must be "standalone" or "embedded" or nil
-  #   @return [Array<String>] 
+  #   @return [Array<String>]
   # @overload Application.get_available_cartridges
-  #   @return [Array<String>]   
+  #   @return [Array<String>]
   #   Returns List of names of all available cartridges
   def self.get_available_cartridges(cart_type=nil)
     cart_names = CartridgeCache.cartridge_names(cart_type)
   end
-  
+
   # Saves the application object in the datastore
   def save
     super(user.login)
@@ -274,12 +274,12 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.usage_records = nil
     self.destroyed_gears = []
   end
-  
+
   # Deletes the application object from the datastore
   def delete
     super(user.login)
   end
-  
+
   # Processes the application descriptor and creates all the gears necessary to host the application.
   # Destroys application on all gears if any gear fails
   # @return [ResultIO]
@@ -297,7 +297,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
           min_gear_count += gi.min
         }
         if ((user.consumed_gears+min_gear_count) > user.max_gears)
-          raise OpenShift::UserException.new("#{user.login} has a gear limit of #{user.max_gears} and this app requires #{min_gear_count} gears.", 104) 
+          raise OpenShift::UserException.new("#{user.login} has a gear limit of #{user.max_gears} and this app requires #{min_gear_count} gears.", 104)
         end
       end
       user.applications = [] unless user.applications
@@ -309,7 +309,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       end
 
       self.gear.name = self.name unless scalable
-      self.class.notify_observers(:application_creation_success, {:application => self, :reply => result_io})              
+      self.class.notify_observers(:application_creation_success, {:application => self, :reply => result_io})
     rescue Exception => e
       Rails.logger.debug e.message
       Rails.logger.debug e.backtrace.join("\n")
@@ -323,7 +323,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.class.notify_observers(:after_application_create, {:application => self, :reply => result_io})
     result_io
   end
-  
+
   # Convience method to cleanup an application
   def cleanup_and_delete
     reply = ResultIO.new
@@ -332,7 +332,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.delete
     reply
   end
-  
+
   # Destroys all gears. Logs message but does not throw an exception on failure to delete any particular gear.
   def destroy
     reply = ResultIO.new
@@ -371,14 +371,14 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
 
       raise OpenShift::NodeException.new("Could not destroy all gears of application.", 1, reply) if failures.length > 0
     end
-    self.class.notify_observers(:after_application_destroy, {:application => self, :reply => reply})    
+    self.class.notify_observers(:after_application_destroy, {:application => self, :reply => reply})
     reply
   end
 
   def web_cart
-    return framework 
+    return framework
   end
-  
+
   def gears
     self.group_instances.uniq.map{ |ginst| ginst.gears }.flatten
   end
@@ -436,7 +436,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.execute_connections
     result_io
   end
-  
+
   # Elaborates the descriptor, configures cartridges that were added to the application dependencies.
   # If a node is empty after removing components, then the gear is destroyed. Errors that occur while removing cartridges are logged but no exception is thrown.
   # If an error occurs while configuring a cartridge, then the cartirdge is deconfigures on all nodes and an exception is thrown.
@@ -470,9 +470,9 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
         end
       rescue Exception => e
         Rails.logger.debug e.message
-        Rails.logger.debug e.backtrace.inspect        
- 
-        if e.message.kind_of?(Hash) and e.message[:exception] 
+        Rails.logger.debug e.backtrace.inspect
+
+        if e.message.kind_of?(Hash) and e.message[:exception]
           successful_gears = []
           successful_gears = e.message[:successful].map{|g| g[:gear]} if e.message[:successful]
           failed_gears = []
@@ -491,7 +491,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
         else
           gear_exception = e
         end
-        
+
         # destroy any unused gears
         # TODO : if the destroy fails below... the user still sees the error as configure failure
         #   Then to recover, if we re-elaborate (like in add_dependency), then the group instance will get lost
@@ -504,11 +504,11 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
         exceptions << gear_exception
       end
     end
-    
+
     unless exceptions.empty?
       raise exceptions.first
     end
-    
+
     self.save
     self.class.notify_observers(:after_application_configure, {:application => self, :reply => reply})
     reply
@@ -528,7 +528,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
         connector_name = conn.from_connector.name
         cart = pub_inst.parent_cart_name
         input_args = [appname, self.domain.namespace, gear.uuid]
-        
+
         job = gear.get_execute_connector_job(cart, connector_name, input_args)
         RemoteJob.add_parallel_job(exec_handle, tag, gear, job)
       }
@@ -549,7 +549,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
         connector_name = conn.to_connector.name
         cart = sub_inst.parent_cart_name
         input_args = [appname, self.domain.namespace, gear.uuid, input_to_subscriber]
-        
+
         job = gear.get_execute_connector_job(cart, connector_name, input_args)
         RemoteJob.add_parallel_job(exec_handle, tag, gear, job)
       }
@@ -557,7 +557,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     }
   end
 
-  # Start a particular dependency on all gears that host it. 
+  # Start a particular dependency on all gears that host it.
   # If unable to start a component, the application is stopped on all gears
   # @param [String] dependency Name of a cartridge to start. Set to nil for all dependencies.
   # @param [Boolean] force_stop_on_failure
@@ -568,7 +568,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       comp_inst = self.comp_instance_map[comp_inst_name]
       next if !dependency.nil? and (comp_inst.parent_cart_name != dependency)
       next if comp_inst.parent_cart_name == self.name
-      
+
       begin
         group_inst = self.group_instance_map[comp_inst.group_instance_name]
         run_on_gears(group_inst.gears, reply) do |gear, r|
@@ -583,7 +583,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.class.notify_observers(:after_start, {:application => self, :reply => reply, :dependency => dependency})
     reply
   end
-  
+
   # Stop a particular dependency on all gears that host it.
   # @param [String] dependency Name of a cartridge to start. Set to nil for all dependencies.
   # @param [Boolean] force_stop_on_failure
@@ -595,7 +595,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       comp_inst = self.comp_instance_map[comp_inst_name]
       next if !dependency.nil? and (comp_inst.parent_cart_name != dependency)
       next if comp_inst.parent_cart_name == self.name
-      
+
       group_inst = self.group_instance_map[comp_inst.group_instance_name]
       s,f = run_on_gears(group_inst.gears, reply, false) do |gear, r|
         r.append gear.stop(comp_inst)
@@ -609,7 +609,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.class.notify_observers(:after_stop, {:application => self, :reply => reply, :dependency => dependency})
     reply
   end
-  
+
   # Force stop a particular dependency on all gears that host it.
   # @param [String] dependency Name of a cartridge to stop. Set to nil for all dependencies.
   # @param [Boolean] throw_exception_on_failure
@@ -628,9 +628,9 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       raise f[0][:exception] if(f.length > 0 and throw_exception_on_failure)
     end
     self.class.notify_observers(:after_force_stop, {:application => self, :reply => reply, :dependency => dependency})
-    reply    
+    reply
   end
-  
+
   # Restart a particular dependency on all gears that host it.
   # @param [String] dependency Name of a cartridge to restart. Set to nil for all dependencies.
   def restart(dependency=nil)
@@ -639,18 +639,18 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.start_order.each do |comp_inst_name|
       comp_inst = self.comp_instance_map[comp_inst_name]
       next if !dependency.nil? and (comp_inst.parent_cart_name != dependency)
-      
+
       group_inst = self.group_instance_map[comp_inst.group_instance_name]
       s,f = run_on_gears(group_inst.gears, reply, false) do |gear, r|
         r.append gear.restart(comp_inst)
       end
-      
+
       raise f[0][:exception] if(f.length > 0)
     end
     self.class.notify_observers(:after_restart, {:application => self, :reply => reply, :dependency => dependency})
-    reply    
+    reply
   end
-  
+
   # Reload a particular dependency on all gears that host it.
   # @param [String] dependency Name of a cartridge to reload. Set to nil for all dependencies.
   def reload(dependency=nil)
@@ -660,18 +660,18 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.start_order.each do |comp_inst_name|
       comp_inst = self.comp_instance_map[comp_inst_name]
       next if !dependency.nil? and (comp_inst.parent_cart_name != dependency)
-      
+
       group_inst = self.group_instance_map[comp_inst.group_instance_name]
       s,f = run_on_gears(group_inst.gears, reply, false) do |gear, r|
         r.append gear.reload(comp_inst)
       end
-      
+
       raise f[0][:exception] if(f.length > 0)
     end
     self.class.notify_observers(:after_reload, {:application => self, :reply => reply, :dependency => dependency})
     reply
   end
-  
+
   # Retrieves status for a particular dependency on all gears that host it.
   # @param [String] dependency Name of a cartridge
   def status(dependency=nil, ret_reply=true)
@@ -710,7 +710,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       return app_status
     end
   end
-  
+
   # Invokes tidy for a particular dependency on all gears that host it.
   # @param [String] dependency Name of a cartridge
   def tidy(dependency=nil)
@@ -718,47 +718,47 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     reply = ResultIO.new
     self.comp_instance_map.each do |comp_inst_name, comp_inst|
       next if !dependency.nil? and (comp_inst.parent_cart_name != dependency)
-      
+
       group_inst = self.group_instance_map[comp_inst.group_instance_name]
       s,f = run_on_gears(group_inst.gears, reply, false) do |gear, r|
         r.append gear.tidy(comp_inst)
       end
-      
-      raise f[0][:exception] if(f.length > 0)      
+
+      raise f[0][:exception] if(f.length > 0)
     end
     reply
   end
-  
+
   # Invokes threaddump for a particular dependency on all gears that host it.
   # @param [String] dependency Name of a cartridge
   def threaddump(dependency=nil)
     reply = ResultIO.new
     self.comp_instance_map.each do |comp_inst_name, comp_inst|
       next if !dependency.nil? and (comp_inst.parent_cart_name != dependency)
-      
+
       group_inst = self.group_instance_map[comp_inst.group_instance_name]
       s,f = run_on_gears(group_inst.gears, reply, false) do |gear, r|
         r.append gear.threaddump(comp_inst)
       end
-      
-      raise f[0][:exception] if(f.length > 0)      
+
+      raise f[0][:exception] if(f.length > 0)
     end
     reply
   end
-  
+
   # Invokes system_messages for a particular dependency on all gears that host it.
-  # @param [String] dependency Name of a cartridge  
+  # @param [String] dependency Name of a cartridge
   def system_messages(dependency=nil)
     reply = ResultIO.new
     self.comp_instance_map.each do |comp_inst_name, comp_inst|
       next if !dependency.nil? and (comp_inst.parent_cart_name != dependency)
-      
+
       group_inst = self.group_instance_map[comp_inst.group_instance_name]
       s,f = run_on_gears(group_inst.gears, reply, false) do |gear, r|
         r.append gear.system_messages(comp_inst)
       end
-      
-      raise f[0][:exception] if(f.length > 0)      
+
+      raise f[0][:exception] if(f.length > 0)
     end
     reply
   end
@@ -810,7 +810,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     end
     reply
   end
-  
+
   def show_port(dependency=nil)
     reply = ResultIO.new
     self.comp_instance_map.each do |comp_inst_name, comp_inst|
@@ -837,7 +837,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     reply
   end
 
-  # Get the state of the application on all gears. 
+  # Get the state of the application on all gears.
   def show_state()
     gear_states = {}
     tag = ""
@@ -862,62 +862,62 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     s,f = run_on_gears(nil,reply,false) do |gear,r|
       r.append gear.add_authorized_ssh_key(ssh_key, key_type, comment)
     end
-    raise f[0][:exception] if(f.length > 0)    
+    raise f[0][:exception] if(f.length > 0)
     reply
   end
-  
+
   def remove_authorized_ssh_key(ssh_key, comment=nil)
     reply = ResultIO.new
     s,f = run_on_gears(nil,reply,false) do |gear,r|
       r.append gear.remove_authorized_ssh_key(ssh_key, comment)
     end
-    raise f[0][:exception] if(f.length > 0)    
+    raise f[0][:exception] if(f.length > 0)
     reply
   end
-  
+
   def add_env_var(key, value)
     reply = ResultIO.new
     s,f = run_on_gears(nil,reply,false) do |gear,r|
       r.append gear.add_env_var(key, value)
     end
-    raise f[0][:exception] if(f.length > 0)  
+    raise f[0][:exception] if(f.length > 0)
     reply
   end
-  
+
   def remove_env_var(key)
     reply = ResultIO.new
     s,f = run_on_gears(nil,reply,false) do |gear,r|
       r.append gear.remove_env_var(key)
     end
-    raise f[0][:exception] if(f.length > 0)    
+    raise f[0][:exception] if(f.length > 0)
     reply
   end
-  
+
   def add_broker_key
     iv, token = OpenShift::AuthService.instance.generate_broker_key(self)
-    
+
     reply = ResultIO.new
     s,f = run_on_gears(nil,reply,false) do |gear,r|
       r.append gear.add_broker_auth_key(iv,token)
     end
-    raise f[0][:exception] if(f.length > 0)    
+    raise f[0][:exception] if(f.length > 0)
     reply
   end
-  
+
   def remove_broker_key
     reply = ResultIO.new
     s,f = run_on_gears(nil,reply,false) do |gear,r|
       r.append gear.remove_broker_auth_key
     end
-    raise f[0][:exception] if(f.length > 0)    
+    raise f[0][:exception] if(f.length > 0)
     reply
   end
-  
+
   def add_node_settings(gears=nil)
     reply = ResultIO.new
-    
+
     gears = self.gears unless gears
-    
+
     self.ssh_keys = {} unless self.ssh_keys
     if @user.env_vars || @user.ssh_keys || @user.system_ssh_keys
       tag = ""
@@ -958,18 +958,18 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       dns.close
     end
   end
-  
+
   def create_dns
     reply = ResultIO.new
-    self.class.notify_observers(:before_create_dns, {:application => self, :reply => reply})    
+    self.class.notify_observers(:before_create_dns, {:application => self, :reply => reply})
     public_hostname = self.container.get_public_hostname
 
     add_dns(@name, @domain.namespace, public_hostname)
 
-    self.class.notify_observers(:after_create_dns, {:application => self, :reply => reply})    
+    self.class.notify_observers(:after_create_dns, {:application => self, :reply => reply})
     reply
   end
-  
+
   def destroy_dns
     reply = ResultIO.new
     self.class.notify_observers(:before_destroy_dns, {:application => self, :reply => reply})
@@ -989,13 +989,13 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     ensure
       dns.close
     end
-    self.class.notify_observers(:after_destroy_dns, {:application => self, :reply => reply})  
+    self.class.notify_observers(:after_destroy_dns, {:application => self, :reply => reply})
     reply
   end
-  
+
   def recreate_dns
     reply = ResultIO.new
-    self.class.notify_observers(:before_recreate_dns, {:application => self, :reply => reply})    
+    self.class.notify_observers(:before_recreate_dns, {:application => self, :reply => reply})
     dns = OpenShift::DnsService.instance
     begin
       public_hostname = self.container.get_public_hostname
@@ -1004,15 +1004,15 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     ensure
       dns.close
     end
-    self.class.notify_observers(:after_recreate_dns, {:application => self, :reply => reply})    
+    self.class.notify_observers(:after_recreate_dns, {:application => self, :reply => reply})
     reply
   end
-  
+
   def get_user_min_max(cart_group_map)
     sup_min = 0
-    sup_max = nil 
+    sup_max = nil
     cart_current_min = 0
-    cart_current_max = nil 
+    cart_current_max = nil
     cart_group_map.each do |group_name, component_instance_list|
       ginst = self.group_instance_map[group_name]
       sup_min += ginst.supported_min
@@ -1066,7 +1066,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     return if not min_scale
     cart_current_min, cart_current_max, sup_min, sup_max = get_user_min_max(cart_group_map)
     cart_current_max = 1000000 if cart_current_max==-1
-    if (Integer(min_scale) < sup_min or Integer(min_scale) > cart_current_max) 
+    if (Integer(min_scale) < sup_min or Integer(min_scale) > cart_current_max)
       raise OpenShift::UserException.new("Invalid scales_from factor #{min_scale} provided. Value out of allowed range ( #{sup_min} : #{cart_current_max==1000000 ? -1 : cart_current_max} ).", 168)
     end
     target_min = Integer(min_scale) - cart_current_min
@@ -1110,14 +1110,14 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     cart_current_min, cart_current_max, sup_min, sup_max = get_user_min_max(cart_group_map)
     sup_max = 1000000 if sup_max==-1
     max_scale_int = Integer(max_scale)
-    max_scale_int = 1000000 if max_scale_int==-1 
+    max_scale_int = 1000000 if max_scale_int==-1
     if (max_scale_int and ( max_scale_int > sup_max or max_scale_int < cart_current_min) )
       raise OpenShift::UserException.new("Invalid scales_to factor #{max_scale} provided. Value out of allowed range ( #{cart_current_min} : #{sup_max==1000000 ? -1 : sup_max} ).", 168)
     end
     target_max = Integer(max_scale)
     cart_group_map.keys.each { |group_name, component_instances|
       gi = self.group_instance_map[group_name]
-      if target_max==-1 
+      if target_max==-1
         next if gi.supported_max!=-1
         gi.max = target_max
         break
@@ -1153,10 +1153,10 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       Rails.logger.debug "Exception caught updating namespace: #{e.message}"
       Rails.logger.debug e.backtrace
       result_io.append e.resultIO if e.respond_to?('resultIO') and e.resultIO
-    end 
+    end
     return { :success => updated, :result_io => result_io }
   end
-  
+
   def complete_namespace_update(new_ns, old_ns)
     self.comp_instances.each do |comp_inst|
       comp_inst.cart_properties.each do |prop_key, prop_value|
@@ -1177,30 +1177,30 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.domain.namespace = new_ns
     self.save
   end
-  
+
   def add_alias(server_alias)
     if !(server_alias =~ /\A[\w\-\.]+\z/) or (server_alias =~ /#{Rails.configuration.openshift[:domain_suffix]}$/)
-      raise OpenShift::UserException.new("Invalid Server Alias '#{server_alias}' specified", 105) 
+      raise OpenShift::UserException.new("Invalid Server Alias '#{server_alias}' specified", 105)
     end
-    
+
     self.aliases = [] unless self.aliases
     raise OpenShift::UserException.new("Alias '#{server_alias}' already exists for '#{@name}'", 255) if self.aliases.include? server_alias
     reply = ResultIO.new
     begin
       self.aliases.push(server_alias)
-      self.save      
+      self.save
       reply.append self.container.add_alias(self, self.gear, self.framework, server_alias)
     rescue Exception => e
       Rails.logger.debug e.message
       Rails.logger.debug e.backtrace.inspect
-      reply.append self.container.remove_alias(self, self.gear, self.framework, server_alias)      
+      reply.append self.container.remove_alias(self, self.gear, self.framework, server_alias)
       self.aliases.delete(server_alias)
       self.save
       raise
     end
     reply
   end
-  
+
   def remove_alias(server_alias)
     self.aliases = [] unless self.aliases
     reply = ResultIO.new
@@ -1216,18 +1216,18 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
         self.save
       else
         raise OpenShift::UserException.new("Alias '#{server_alias}' does not exist for '#{@name}'", 255, reply)
-      end      
+      end
     end
     reply
   end
-  
+
   def add_dependency(dep)
     reply = ResultIO.new
     self.class.notify_observers(:before_add_dependency, {:application => self, :dependency => dep, :reply => reply})
     # Create persistent storage app entry on configure (one of the first things)
     Rails.logger.debug "DEBUG: Adding embedded app info from persistant storage: #{@name}:#{dep}"
     self.cart_data = {} if @cart_data.nil?
-    
+
     raise OpenShift::UserException.new("#{dep} already embedded in '#{@name}'", 136) if self.embedded.include? dep
     if self.scalable
       allowed_cartridges = SCALABLE_EMBEDDED_CARTS & Application.get_available_cartridges.sort
@@ -1247,12 +1247,12 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.class.notify_observers(:after_add_dependency, {:application => self, :dependency => dep, :reply => reply})
     reply
   end
-  
+
   def remove_dependency(dep)
     reply = ResultIO.new
     self.class.notify_observers(:before_remove_dependency, {:application => self, :dependency => dep, :reply => reply})
     self.embedded = {} unless self.embedded
-        
+
     raise OpenShift::UserException.new("#{dep} not embedded in '#{@name}', try adding it first", 135) unless self.embedded.include? dep
     raise OpenShift::UserException.new("#{dep} is not allowed to be removed from '#{@name}'. It is a required dependency for a scalable application.", 137) if (self.scalable and self.proxy_cartridge==dep)
     remove_from_requires_feature(dep)
@@ -1295,15 +1295,15 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       return nil
     end
   end
-  
+
   # Returns the first Gear object on which the application is running
   # @return [Gear]
-  # @deprecated  
+  # @deprecated
   def gear
     if self.group_instances.nil?
       elaborate_descriptor
     end
-    
+
     if scalable
       self.group_instance_map.keys.each { |ginst_name|
         return self.group_instance_map[ginst_name].gears.first if ginst_name.include? self.proxy_cartridge
@@ -1312,14 +1312,14 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
 
     group_instance = self.group_instances.first
     return nil unless group_instance
-    
+
     return group_instance.gears.first
   end
 
   def scaling_limits(dependency=nil)
     if dependency.nil?
       if self.scalable
-        dependency = "web" 
+        dependency = "web"
       else
         dependency = self.framework
       end
@@ -1331,27 +1331,27 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     ginst = self.group_instance_map[cinst.group_instance_name]
     return ginst.min,ginst.max
   end
-  
+
   # Get the ApplicationContainerProxy object for the first gear the application is running on
   # @return [ApplicationContainerProxy]
-  # @deprecated  
+  # @deprecated
   def container
     return nil if self.gear.nil?
     return self.gear.get_proxy
   end
-  
+
   # Get the name of framework cartridge in use by the application without the version suffix
   # @return [String]
-  # @deprecated  
-  def framework_cartridge  
+  # @deprecated
+  def framework_cartridge
     fcart = self.framework
     return fcart.split('-')[0..-2].join('-') unless fcart.nil?
     return nil
   end
-  
+
   # Get the name of framework cartridge in use by the application
   # @return [String]
-  # @deprecated  
+  # @deprecated
   def framework
     framework_carts = CartridgeCache.cartridge_names('standalone')
     self.comp_instance_map.each { |cname, cinst|
@@ -1360,10 +1360,10 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     }
     return nil
   end
-  
+
   # Provide a list of direct dependencies of the application that are hosted on the same gear as the "framework" cartridge.
   # @return [Array<String>]
-  # @deprecated  
+  # @deprecated
   def embedded
     embedded_carts = CartridgeCache.cartridge_names('embedded')
     retval = {}
@@ -1386,24 +1386,24 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       comp_inst.cart_data = [info] if cart_name == comp_inst.parent_cart_name
     end
   end
-  
+
   # Provides an array version of the component instance map for saving in the datastore.
   # @return [Array<Hash>]
   def comp_instances
     @comp_instance_map = {} if @comp_instance_map.nil?
     @comp_instance_map.values
   end
-  
+
   # Rebuilds the component instance map from an array of hashes or objects
   # @param [Array<Hash>] data
   def comp_instances=(data)
-    comp_instance_map_will_change!    
+    comp_instance_map_will_change!
     @comp_instance_map = {} if @comp_instance_map.nil?
     data.each do |value|
       if value.class == ComponentInstance
         @comp_instance_map[value.name] = value
       else
-        key = value["name"]            
+        key = value["name"]
         @comp_instance_map[key] = ComponentInstance.new
         @comp_instance_map[key].attributes=value
       end
@@ -1416,18 +1416,18 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     @group_instance_map = {} if @group_instance_map.nil?
     values = @group_instance_map.values.uniq
     keys   = @group_instance_map.keys
-    
+
     values.each do |group_inst|
       group_inst.reused_by = keys.clone.delete_if{ |k| @group_instance_map[k] != group_inst }
     end
-    
+
     values
   end
-  
+
   # Rebuilds the group instance map from an array of hashes or objects
   # @param [Array<Hash>] data
   def group_instances=(data)
-    group_instance_map_will_change!    
+    group_instance_map_will_change!
     @group_instance_map = {} if @group_instance_map.nil?
     data.each do |value|
       if value.class == GroupInstance
@@ -1443,7 +1443,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       end
     end
   end
-   
+
   def get_name_prefix
     return "@@app"
   end
@@ -1460,8 +1460,8 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     self.comp_instance_map = {} if comp_instance_map.nil?
     self.working_comp_inst_hash = {}
     self.working_group_inst_hash = {}
-    self.group_override_map = {} 
-    self.conn_endpoints_list = [] 
+    self.group_override_map = {}
+    self.conn_endpoints_list = []
     default_profile = @profile_name_map[@default_profile]
 
     default_profile.groups.each { |g|
@@ -1471,7 +1471,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       if gi.nil?
         gi = self.group_instance_map[gpath]
         if gi.nil?
-          gi = GroupInstance.new(self, self.name, self.default_profile, g.name, gpath) 
+          gi = GroupInstance.new(self, self.name, self.default_profile, g.name, gpath)
         else
           gi.merge(self.name, self.default_profile, g.name, gpath)
         end
@@ -1482,7 +1482,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
       self.working_group_inst_hash[gpath] = gi
       gi.elaborate(default_profile, g, self.get_name_prefix, self)
     }
-    
+
     # make connection_endpoints out of provided connections
     default_profile.connections.each { |conn|
       inst1 = ComponentInstance::find_component_in_cart(default_profile, self, conn.components[0], self.get_name_prefix)
@@ -1492,27 +1492,27 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
     # check self.comp_instance_map for component instances
     # check self.group_instance_map for group instances
     # check self.conn_endpoints_list for list of connection endpoints (fully resolved)
-  
+
     # resolve group co-locations
     colocate_groups
-    
+
     # get configure_order and start_order
     get_exec_order(default_profile)
-  
+
     deleted_components_list = []
     self.comp_instance_map.each { |k,v| deleted_components_list << k if self.working_comp_inst_hash[k].nil?  }
-    
+
     yield deleted_components_list if block_given?
-    
-    # delete entries in {group,comp}_instance_map that do 
+
+    # delete entries in {group,comp}_instance_map that do
     # not exist in working_{group,comp}_inst_hash
-    self.group_instance_map.delete_if { |k,v| 
+    self.group_instance_map.delete_if { |k,v|
       v.component_instances.delete(k) if self.working_comp_inst_hash[k].nil? and v.component_instances.include?(k)
       self.working_group_inst_hash[k].nil?
     }
     self.comp_instance_map.delete_if { |k,v| self.working_comp_inst_hash[k].nil?  }
   end
-  
+
   # Get path for checking application health
   # @return [String]
   def health_check_path
@@ -1527,7 +1527,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
         page = 'health'
     end
   end
-  
+
   def process_cartridge_commands(result)
     commands = result.cart_commands
     self.ssh_keys = {} unless self.ssh_keys
@@ -1615,7 +1615,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
         usage_record.addtl_fs_gb = gear.group_instance.addtl_fs_gb
       end
       self.usage_records << usage_record
-      
+
       self.class.notify_observers(:track_usage, {:gear_uuid => gear.uuid, :login => gear.app.user.login, :event => event, :time => now, :uuid => uuid, :usage_type => usage_type, :gear_size => gear.node_profile, :addtl_fs_gb => gear.group_instance.addtl_fs_gb})
     end
     if Rails.configuration.usage_tracking[:syslog_enabled]
@@ -1637,7 +1637,7 @@ Configure-Order: [\"proxy/#{framework}\", \"proxy/haproxy-1.4\"]
   end
 
 private
-  
+
   def get_exec_order(default_profile)
     self.configure_order = []
     default_profile.configure_order.each { |raw_c_name|
@@ -1656,7 +1656,7 @@ private
     }
     self.start_order = self.configure_order
   end
-  
+
   def colocate_groups
     default_profile = @profile_name_map[@default_profile]
     self.conn_endpoints_list.each { |conn|
@@ -1674,7 +1674,7 @@ private
     generate_group_overrides(default_profile)
     auto_merge_top_groups(default_profile)
   end
-  
+
   def generate_group_overrides(default_profile)
     default_profile.group_overrides.each do |go|
       go_copy = go.dup
@@ -1690,7 +1690,7 @@ private
       }
     end
   end
-  
+
   def auto_merge_top_groups(default_profile)
     if self.scalable
       group_name_list = self.group_instance_map.keys.dup
@@ -1752,7 +1752,7 @@ private
         end
       end
     end
-    
+
     return successful_runs, failed_runs
   end
 end

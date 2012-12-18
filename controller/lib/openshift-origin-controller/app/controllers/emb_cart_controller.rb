@@ -31,7 +31,7 @@ class EmbCartController < BaseController
     render_success(:ok, "cartridges", cartridges, "LIST_APP_CARTRIDGES",
                    "Listing cartridges for application #{id} under domain #{domain_id}")
   end
-  
+
   # GET /domains/[domain_id]/applications/[application_id]/cartridges/[id]
   def show
     domain_id = params[:domain_id]
@@ -39,7 +39,7 @@ class EmbCartController < BaseController
     id = params[:id]
     #include=status_messages
     status_messages = (params[:include] == "status_messages")
-    
+
     domain = Domain.get(@cloud_user, domain_id)
     return render_error(:not_found, "Domain #{domain_id} not found", 127,
                         "SHOW_APP_CARTRIDGE") if !domain || !domain.hasAccess?(@cloud_user)
@@ -48,8 +48,8 @@ class EmbCartController < BaseController
     application = get_application(application_id)
     return render_error(:not_found, "Application '#{application_id}' not found for domain '#{domain_id}'",
                         101, "SHOW_APP_CARTRIDGE") if !application
-   
-    cartridge = nil 
+
+    cartridge = nil
     application.embedded.each do |key, value|
       if key == id
         app_status = application.status(key, false) if status_messages
@@ -111,7 +111,7 @@ class EmbCartController < BaseController
     rescue Exception => e
       return render_exception(e, "EMBED_CARTRIDGE")
     end
-    
+
     #TODO: Need a proper method to let us know if cart will get its own gear
     if application.scalable && colocate_with.nil? && (@cloud_user.consumed_gears >= @cloud_user.max_gears) && name != 'jenkins-client-1.4'
       return render_error(:unprocessable_entity, "#{@cloud_user.login} has already reached the gear limit of #{@cloud_user.max_gears}",
@@ -167,7 +167,7 @@ class EmbCartController < BaseController
     application = get_application(id)
     return render_format_error(:not_found, "Application '#{id}' not found for domain '#{domain_id}'",
                                101, "REMOVE_CARTRIDGE") unless application
-    
+
     return render_format_error(:bad_request, "Cartridge #{cartridge} not embedded within application #{id}",
                                129, "REMOVE_CARTRIDGE") if !application.embedded or !application.embedded.has_key?(cartridge)
 
@@ -177,7 +177,7 @@ class EmbCartController < BaseController
     rescue Exception => e
       return render_format_exception(e, "REMOVE_CARTRIDGE")
     end
-      
+
     application = get_application(id)
     if $requested_api_version == 1.0
       app = RestApplication10.new(application, get_url, nolinks)
@@ -195,7 +195,7 @@ class EmbCartController < BaseController
     additional_storage = params[:additional_storage]
     scales_from = params[:scales_from]
     scales_to = params[:scales_to]
-    
+
     domain = Domain.get(@cloud_user, domain_id)
     return render_error(:not_found, "Domain #{domain_id} not found", 127,
                         "UPDATE_CARTRIDGE") if !domain || !domain.hasAccess?(@cloud_user)
@@ -203,7 +203,7 @@ class EmbCartController < BaseController
     app = get_application(app_id)
     return render_error(:not_found, "Application '#{app_id}' not found for domain '#{domain_id}'",
                         101, "UPDATE_CARTRIDGE") unless app
-                        
+
     storage_map = {}
     app.comp_instance_map.values.each do |cinst|
       if cinst.parent_cart_name==cartridge_name
@@ -214,14 +214,14 @@ class EmbCartController < BaseController
     end
     return render_error(:not_found, "Cartridge '#{cartridge_name}' for application '#{app_id}' not found",
                         163, "UPDATE_CARTRIDGE") unless storage_map.keys.length>0
-                
-    #only update attributes that are specified                  
+
+    #only update attributes that are specified
     if additional_storage
       max_storage = @cloud_user.capabilities['max_storage_per_gear']
       return render_format_error(:forbidden, "User is not allowed to change storage quota", 164,
                                  "UPDATE_CARTRIDGE") unless max_storage
       num_storage = nil
-      begin 
+      begin
         num_storage = Integer(additional_storage)
       rescue => e
         return render_format_error(:unprocessable_entity, "Invalid storage value provided.", 165, "UPDATE_CARTRIDGE", "additional_storage")
@@ -235,7 +235,7 @@ class EmbCartController < BaseController
         app.save
       rescue Exception => e
         return render_format_exception(e, "UPDATE_CARTRIDGE")
-      end             
+      end
     end
 
     if scales_from or scales_to
@@ -243,10 +243,10 @@ class EmbCartController < BaseController
         app.set_user_min_max(storage_map, scales_from, scales_to)
       rescue OpenShift::UserException=>e
         return render_format_error(:unprocessable_entity, e.message, 168,
-                         "UPDATE_CARTRIDGE") 
+                         "UPDATE_CARTRIDGE")
       rescue Exception=>e
         return render_format_error(:forbidden, e.message, 164,
-                         "UPDATE_CARTRIDGE") 
+                         "UPDATE_CARTRIDGE")
       end
     end
     cart_type = cartridge_name==app.framework ? "standalone" : "embedded"
