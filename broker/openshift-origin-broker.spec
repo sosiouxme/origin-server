@@ -3,7 +3,7 @@
 
 Summary:   OpenShift Origin broker components
 Name:      openshift-origin-broker
-Version:   1.0.5
+Version:   1.0.6
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -171,6 +171,9 @@ chcon -R -t httpd_var_run_t %{brokerdir}/httpd/run
 /sbin/restorecon -R -v /var/run
 
 %changelog
+* Tue Dec 18 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.6-1
+- BZ888056 and BZ888043 (bleanhar@redhat.com)
+
 * Tue Dec 11 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
 - Merge pull request #7 from brenton/BZ886159 (bleanhar@redhat.com)
 - BZ886159 - Moving the console port from 3128 to 8118 (bleanhar@redhat.com)
