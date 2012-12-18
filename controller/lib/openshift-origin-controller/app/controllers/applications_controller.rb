@@ -80,7 +80,7 @@ class ApplicationsController < BaseController
       application = Application.new(@cloud_user, app_name, nil, node_profile, nil, template, scale, domain)
     else
       if !cartridge or not CartridgeCache.cartridge_names('standalone').include?(cartridge)
-        carts = get_cached("cart_list_standalone", :expires_in => 21600.seconds) {Application.get_available_cartridges("standalone")}
+        carts = Application.get_available_cartridges("standalone")
         return render_error(:unprocessable_entity, "Invalid cartridge #{cartridge}. Valid values are (#{carts.join(', ')})",
                             109, "ADD_APPLICATION", "cartridge")
       end
