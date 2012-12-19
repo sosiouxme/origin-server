@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-broker-util
-Version:        1.0.12
+Version:        1.0.13
 Release:        1%{?dist}
 Group:          Network/Daemons
 License:        ASL 2.0
@@ -60,6 +60,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/oo-accept-systems.8.gz
 
 %changelog
+* Tue Dec 18 2012 Luke Meyer <lmeyer@redhat.com> 1.0.13-1
+- oo-accept-broker: work around mongo replica sets; changes to man page (lmeyer@redhat.com)
+
 * Thu Dec 13 2012 Luke Meyer <lmeyer@redhat.com> 1.0.12-1
 - put title on man pages (lmeyer@redhat.com)
 - oo-admin-chk and man page tweaks while looking at BZ874799 and BZ875657
