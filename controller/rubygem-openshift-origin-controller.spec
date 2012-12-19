@@ -5,7 +5,7 @@
 
 Summary:        Cloud Development Controller
 Name:           rubygem-%{gemname}
-Version: 1.0.8
+Version: 1.0.9
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -81,6 +81,12 @@ rm -rf %{buildroot}
 %{ruby_sitelib}/%{gemname}.rb
 
 %changelog
+* Tue Dec 18 2012 Luke Meyer <lmeyer@redhat.com> 1.0.9-1
+- fixing BZ864921 * catch NodeException when getting cartridge list * return
+  empty list * remove caches above CartridgeCache.cartridge_names. Then admins
+  setting up broker will not get surprise exceptions just because they have no
+  nodes or can't communicate with them. (lmeyer@redhat.com)
+
 * Tue Dec 11 2012 Luke Meyer <lmeyer@redhat.com> 1.0.8-1
 - create :default_gear_capabilities conf key for setting default gear
   capabilities a user has at creation (lmeyer@redhat.com)
