@@ -5,7 +5,7 @@
 
 Summary:        Cloud Development Controller
 Name:           rubygem-%{gemname}
-Version: 1.0.9
+Version: 1.0.10
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -65,6 +65,9 @@ rm -rf %{buildroot}
 %{gemdir}/specifications/%{gemname}-%{version}.gemspec
 
 %changelog
+* Thu Dec 20 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.10-1
+- Removing our ruby- subpackages (bleanhar@redhat.com)
+
 * Tue Dec 18 2012 Luke Meyer <lmeyer@redhat.com> 1.0.9-1
 - fixing BZ864921 * catch NodeException when getting cartridge list * return
   empty list * remove caches above CartridgeCache.cartridge_names. Then admins
