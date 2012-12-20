@@ -5,7 +5,7 @@
 
 Summary:        OpenShift plugin for BIND service
 Name:           rubygem-%{gemname}
-Version:        1.0.1
+Version:        1.0.2
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -74,6 +74,9 @@ rm -rf %{buildroot}
 /etc/openshift/plugins.d/openshift-origin-dns-bind.conf.example
 
 %changelog
+* Thu Dec 20 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.2-1
+- Removing our ruby- subpackages (bleanhar@redhat.com)
+
 * Thu Nov 15 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.1-1
 - bumping specs to at least 1.0.0 (dmcphers@redhat.com)
 - Moving broker config to /etc/openshift/broker.conf Rails app and all oo-*
