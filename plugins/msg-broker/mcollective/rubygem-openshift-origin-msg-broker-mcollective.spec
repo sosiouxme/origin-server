@@ -26,15 +26,7 @@ BuildArch:      noarch
 Provides:       rubygem(%{gemname}) = %version
 Obsoletes:      rubygem-gearchanger-mcollective-plugin
 
-%package -n ruby-%{gemname}
-Summary:        OpenShift plugin for mcollective based node/gear manager
-Requires:       rubygem(%{gemname}) = %version
-Provides:       ruby(%{gemname}) = %version
-
 %description
-OpenShift plugin for mcollective based node/gear manager
-
-%description -n ruby-%{gemname}
 OpenShift plugin for mcollective based node/gear manager
 
 %prep
@@ -55,10 +47,6 @@ mkdir -p %{buildroot}%{ruby_sitelib}
 gem build %{gemname}.gemspec
 gem install --local --install-dir %{buildroot}%{gemdir} --force %{gemname}-%{version}.gem
 
-# Symlink into the ruby site library directories
-ln -s %{geminstdir}/lib/%{gemname} %{buildroot}%{ruby_sitelib}
-ln -s %{geminstdir}/lib/%{gemname}.rb %{buildroot}%{ruby_sitelib}
-
 mkdir -p %{buildroot}/etc/openshift/plugins.d
 cp %{buildroot}/%{gemdir}/gems/%{gemname}-%{version}/conf/openshift-origin-msg-broker-mcollective.conf.example %{buildroot}/etc/openshift/plugins.d/openshift-origin-msg-broker-mcollective.conf.example
 
@@ -74,10 +62,6 @@ rm -rf %{buildroot}
 %{gemdir}/cache/%{gemname}-%{version}.gem
 %{gemdir}/specifications/%{gemname}-%{version}.gemspec
 %{_sysconfdir}/openshift/plugins.d/openshift-origin-msg-broker-mcollective.conf.example
-
-%files -n ruby-%{gemname}
-%{ruby_sitelib}/%{gemname}
-%{ruby_sitelib}/%{gemname}.rb
 
 %changelog
 * Sun Dec 09 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-1

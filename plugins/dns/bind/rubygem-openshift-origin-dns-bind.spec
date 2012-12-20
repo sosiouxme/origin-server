@@ -29,15 +29,7 @@ BuildRequires:  rubygems
 BuildArch:      noarch
 Provides:       rubygem(%{gemname}) = %version
 
-%package -n ruby-%{gemname}
-Summary:        OpenShift plugin for Bind service
-Requires:       rubygem(%{gemname}) = %version
-Provides:       ruby(%{gemname}) = %version
-
 %description
-Provides a Bind DNS service based plugin
-
-%description -n ruby-%{gemname}
 Provides a Bind DNS service based plugin
 
 %prep
@@ -54,10 +46,6 @@ mkdir -p %{buildroot}/etc/openshift/plugins.d
 # Build and install into the rubygem structure
 gem build %{gemname}.gemspec
 gem install --local --install-dir %{buildroot}%{gemdir} --force %{gemname}-%{version}.gem
-
-# Symlink into the ruby site library directories
-ln -s %{geminstdir}/lib/%{gemname} %{buildroot}%{ruby_sitelib}
-ln -s %{geminstdir}/lib/%{gemname}.rb %{buildroot}%{ruby_sitelib}
 
 # Add documents/examples
 mkdir -p %{buildroot}%{_docdir}/%{name}-%{version}/
@@ -84,10 +72,6 @@ rm -rf %{buildroot}
 %{gemdir}/specifications/%{gemname}-%{version}.gemspec
 /usr/share/selinux/packages/rubygem-openshift-origin-dns-bind
 /etc/openshift/plugins.d/openshift-origin-dns-bind.conf.example
-
-%files -n ruby-%{gemname}
-%{ruby_sitelib}/%{gemname}
-%{ruby_sitelib}/%{gemname}.rb
 
 %changelog
 * Thu Nov 15 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.1-1

@@ -27,15 +27,7 @@ BuildRequires:  rubygems
 BuildArch:      noarch
 Provides:       rubygem(%{gemname}) = %version
 
-%package -n ruby-%{gemname}
-Summary:        OpenShift Origin plugin for mongo auth service
-Requires:       rubygem(%{gemname}) = %version
-Provides:       ruby(%{gemname}) = %version
-
 %description
-Provides a mongo auth service based plugin
-
-%description -n ruby-%{gemname}
 Provides a mongo auth service based plugin
 
 %prep
@@ -57,10 +49,6 @@ gem install --local --install-dir %{buildroot}%{gemdir} --force %{gemname}-%{ver
 mv %{buildroot}%{gemdir}/bin/* %{buildroot}%{_bindir}
 rm -rf %{buildroot}%{gemdir}/bin
 
-# Symlink into the ruby site library directories
-ln -s %{geminstdir}/lib/%{gemname} %{buildroot}%{ruby_sitelib}
-ln -s %{geminstdir}/lib/%{gemname}.rb %{buildroot}%{ruby_sitelib}
-
 mkdir -p %{buildroot}/etc/openshift/plugins.d
 cp %{buildroot}/%{geminstdir}/conf/openshift-origin-auth-mongo.conf.example %{buildroot}/etc/openshift/plugins.d/
 
@@ -77,10 +65,6 @@ rm -rf %{buildroot}
 %{gemdir}/specifications/%{gemname}-%{version}.gemspec
 %{_bindir}/*
 %{_sysconfdir}/openshift/plugins.d/openshift-origin-auth-mongo.conf.example
-
-%files -n ruby-%{gemname}
-%{ruby_sitelib}/%{gemname}
-%{ruby_sitelib}/%{gemname}.rb
 
 %changelog
 * Thu Oct 11 2012 Brenton Leanhardt <bleanhar@redhat.com> 0.8.9-1

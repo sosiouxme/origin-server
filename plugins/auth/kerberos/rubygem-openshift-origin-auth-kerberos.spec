@@ -27,16 +27,7 @@ BuildRequires:  rubygems
 BuildArch:      noarch
 Provides:       rubygem(%{gemname}) = %version
 
-%package -n ruby-%{gemname}
-Summary:        OpenShift Origin plugin for kerberos auth service
-Requires:       rubygem(%{gemname}) = %version
-Provides:       ruby(%{gemname}) = %version
-Obsoletes:      rubygem-swingshift-kerberos-plugin
-
 %description
-Provides a kerberos auth service based plugin
-
-%description -n ruby-%{gemname}
 Provides a kerberos auth service based plugin
 
 %prep
@@ -54,10 +45,6 @@ mkdir -p %{buildroot}/etc/openshift/plugins.d
 gem build %{gemname}.gemspec
 gem install --local --install-dir %{buildroot}%{gemdir} --force %{gemname}-%{version}.gem
 
-# Symlink into the ruby site library directories
-ln -s %{geminstdir}/lib/%{gemname} %{buildroot}%{ruby_sitelib}
-ln -s %{geminstdir}/lib/%{gemname}.rb %{buildroot}%{ruby_sitelib}
-
 mkdir -p %{buildroot}/openshift/plugins.d
 cp conf/openshift-origin-auth-kerberos.conf.example %{buildroot}/etc/openshift/plugins.d/
 
@@ -73,10 +60,6 @@ rm -rf %{buildroot}
 %{gemdir}/cache/%{gemname}-%{version}.gem
 %{gemdir}/specifications/%{gemname}-%{version}.gemspec
 %{_sysconfdir}/openshift/plugins.d/openshift-origin-auth-kerberos.conf.example
-
-%files -n ruby-%{gemname}
-%{ruby_sitelib}/%{gemname}
-%{ruby_sitelib}/%{gemname}.rb
 
 %changelog
 * Mon Oct 08 2012 Dan McPherson <dmcphers@redhat.com> 0.8.9-1

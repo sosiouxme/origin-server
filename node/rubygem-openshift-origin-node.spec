@@ -40,16 +40,8 @@ BuildRequires:  rubygems
 BuildArch:      noarch
 Provides:       rubygem(%{gemname}) = %version
 
-%package -n ruby-%{gemname}
-Summary:        Cloud Development Node Library
-Requires:       rubygem(%{gemname}) = %version
-Provides:       ruby(%{gemname}) = %version
-
 %description
 This contains the Cloud Development Node packaged as a rubygem.
-
-%description -n ruby-%{gemname}
-This contains the Cloud Development Node packaged as a ruby site library.
 
 %prep
 %setup -q
@@ -81,10 +73,6 @@ rm -rf %{buildroot}%{gemdir}/bin
 
 # Move the gem configs to the standard filesystem location
 mv %{buildroot}%{geminstdir}/conf/* %{buildroot}%{_sysconfdir}/openshift
-
-# Symlink into the ruby site library directories
-ln -s %{geminstdir}/lib/%{gemname} %{buildroot}%{ruby_sitelib}
-ln -s %{geminstdir}/lib/%{gemname}.rb %{buildroot}%{ruby_sitelib}
 
 #move pam limit binaries to proper location
 mv %{buildroot}%{geminstdir}/misc/bin/teardown_pam_fs_limits.sh %{buildroot}%{_libexecdir}/openshift/lib
@@ -152,10 +140,6 @@ rm -rf %{buildroot}
 
 # save the example cgconfig.conf
 %doc %{_docdir}/%{name}-%{version}
-
-%files -n ruby-%{gemname}
-%{ruby_sitelib}/%{gemname}
-%{ruby_sitelib}/%{gemname}.rb
 
 %post
 echo "/usr/bin/oo-trap-user" >> /etc/shells

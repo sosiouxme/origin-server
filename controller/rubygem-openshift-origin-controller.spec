@@ -34,16 +34,8 @@ BuildRequires:  rubygems
 BuildArch:      noarch
 Provides:       rubygem(%{gemname}) = %version
 
-%package -n ruby-%{gemname}
-Summary:        Cloud Development Controller Library
-Requires:       rubygem(%{gemname}) = %version
-Provides:       ruby(%{gemname}) = %version
-
 %description
 This contains the Cloud Development Controller packaged as a rubygem.
-
-%description -n ruby-%{gemname}
-This contains the Cloud Development Controller packaged as a ruby site library.
 
 %prep
 %setup -q
@@ -60,10 +52,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/openshift/
 gem build %{gemname}.gemspec
 gem install --local --install-dir %{buildroot}%{gemdir} --force %{gemname}-%{version}.gem
 
-# Symlink into the ruby site library directories
-ln -s %{geminstdir}/lib/%{gemname} %{buildroot}%{ruby_sitelib}
-ln -s %{geminstdir}/lib/%{gemname}.rb %{buildroot}%{ruby_sitelib}
-
 %clean
 rm -rf %{buildroot}                                
 
@@ -75,10 +63,6 @@ rm -rf %{buildroot}
 %{gemdir}/gems/%{gemname}-%{version}
 %{gemdir}/cache/%{gemname}-%{version}.gem
 %{gemdir}/specifications/%{gemname}-%{version}.gemspec
-
-%files -n ruby-%{gemname}
-%{ruby_sitelib}/%{gemname}
-%{ruby_sitelib}/%{gemname}.rb
 
 %changelog
 * Tue Dec 18 2012 Luke Meyer <lmeyer@redhat.com> 1.0.9-1
