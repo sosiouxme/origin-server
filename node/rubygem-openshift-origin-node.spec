@@ -7,7 +7,7 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version: 1.0.8
+Version: 1.0.9
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -151,6 +151,9 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Thu Dec 20 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.9-1
+- Removing our ruby- subpackages (bleanhar@redhat.com)
+
 * Tue Dec 11 2012 Luke Meyer <lmeyer@redhat.com> 1.0.8-1
 - oo-accept-* changes for PUBLIC_* node settings and others. US3215 revisiting
   US3036 (lmeyer@redhat.com)
