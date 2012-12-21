@@ -103,8 +103,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(0640,apache,apache,0750)
-%attr(0644,-,-) %ghost %{brokerdir}/log/production.log
-%attr(0644,-,-) %ghost %{brokerdir}/log/development.log
+%attr(0640,-,-) %ghost %{brokerdir}/log/production.log
+%attr(0640,-,-) %ghost %{brokerdir}/log/development.log
 %attr(0640,-,-) %ghost %{_localstatedir}/log/openshift/user_action.log
 %attr(0750,-,-) %{brokerdir}/script
 %attr(0750,-,-) %{brokerdir}/tmp
@@ -149,9 +149,9 @@ systemctl --system daemon-reload
 for l in %{_localstatedir}/log/openshift/user_action.log %{brokerdir}/log/{development,production}.log; do
   if [ ! -f $l ]; then
     touch $l
-    chown apache:apache $l
-    chmod 644 $l
   fi
+  chown apache:apache $l
+  chmod 640 $l
 done
 
 #selinux updated

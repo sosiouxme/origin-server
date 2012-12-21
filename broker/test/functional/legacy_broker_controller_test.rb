@@ -7,7 +7,11 @@ class LegacyBrokerControllerTest < ActionController::TestCase
     Rails.cache.clear
     Rails.configuration.action_controller.perform_caching = true
     
-    Application.expects(:get_available_cartridges).returns(['php-5.3', 'python-2.6'])
+    cart = mock()
+    cart.stubs(:name).returns('php-5.3')
+    proxy = OpenShift::ApplicationContainerProxy.new
+    proxy.expects(:get_available_cartridges).returns([cart])
+    OpenShift::ApplicationContainerProxy.expects(:find_one).returns(proxy)
 
     # should be a cache miss
     resp = post(:cart_list_post, {:json_data => '{"cart_type" : "standalone"}'})
@@ -27,7 +31,11 @@ class LegacyBrokerControllerTest < ActionController::TestCase
     Rails.cache.clear
     Rails.configuration.action_controller.perform_caching = true
     
-    Application.expects(:get_available_cartridges).returns(['mysql-5.1', 'phpmyadmin-3.4'])
+    cart = mock()
+    cart.stubs(:name).returns('mysql-5.1')
+    proxy = OpenShift::ApplicationContainerProxy.new
+    proxy.expects(:get_available_cartridges).returns([cart])
+    OpenShift::ApplicationContainerProxy.expects(:find_one).returns(proxy)
 
     # should be a cache miss
     resp = post(:cart_list_post, {:json_data => '{"cart_type" : "embedded"}'})
