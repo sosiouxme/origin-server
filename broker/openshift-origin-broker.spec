@@ -3,7 +3,7 @@
 
 Summary:   OpenShift Origin broker components
 Name:      openshift-origin-broker
-Version:   1.0.6
+Version:   1.0.7
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -183,6 +183,16 @@ chcon -R -t httpd_var_run_t %{brokerdir}/httpd/run
 /sbin/restorecon -R -v /var/run
 
 %changelog
+* Fri Dec 21 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.7-1
+- Test fix for recent caching change (bleanhar@redhat.com)
+- Minor tweak to the broker log owner/mode issue (bleanhar@redhat.com)
+- BZ888671 -  oo-accept-broker or oo-accept-systems will create production.log,
+  the file's permission is wrong. (bleanhar@redhat.com)
+- BZ888671 -  oo-accept-broker or oo-accept-systems will create production.log,
+  the file's permission is wrong. (bleanhar@redhat.com)
+- More 'elif' fixes (technically not needed for Enterprise)
+  (bleanhar@redhat.com)
+
 * Tue Dec 18 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.6-1
 - BZ888056 and BZ888043 (bleanhar@redhat.com)
 
