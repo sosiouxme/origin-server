@@ -105,6 +105,7 @@ mkdir -p %{buildroot}%{apprundir}
 mv %{buildroot}%{geminstdir}/misc/doc/cgconfig.conf %{buildroot}%{_docdir}/%{name}-%{version}/cgconfig.conf
 
 mv httpd/000001_openshift_origin_node.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
+mv httpd/000001_openshift_origin_node_servername.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 #%if 0%{?fedora}%{?rhel} <= 6
 mkdir -p %{buildroot}%{_initddir}
@@ -135,6 +136,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/openshift/node.conf
 %attr(0750,-,-) %{_sysconfdir}/httpd/conf.d/openshift
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/000001_openshift_origin_node.conf
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/000001_openshift_origin_node_servername.conf
 %attr(0755,-,-) %{_var}/lib/openshift
 
 #%if 0%{?fedora}%{?rhel} <= 6
