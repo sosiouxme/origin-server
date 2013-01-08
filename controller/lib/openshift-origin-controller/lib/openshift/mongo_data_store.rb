@@ -7,7 +7,7 @@ module OpenShift
     MAX_CON_RETRIES   = 60
     CON_RETRY_WAIT_TM = 0.5 # in secs
 
-    attr_reader :replica_set, :host_port, :user, :password, :db, :collections
+    attr_reader :replica_set, :host_port, :user, :password, :db, :collections, :ssl
  
     def initialize(access_info = nil)
       if access_info != nil
@@ -23,6 +23,7 @@ module OpenShift
       @password = access_info[:password]
       @db = access_info[:db]
       @collections = access_info[:collections]
+      @ssl = access_info[:ssl].include?("true")
     end
      
     def self.instance
@@ -175,9 +176,9 @@ module OpenShift
 
     def db
       if @replica_set
-        con = Mongo::ReplSetConnection.new(*@host_port << {:read => :secondary, :connect_timeout => 60})
+        con = Mongo::ReplSetConnection.new(*@host_port << {:read => :secondary, :connect_timeout => 60, :ssl => @ssl})
       else
-        con = Mongo::Connection.new(@host_port[0], @host_port[1])
+        con = Mongo::Connection.new(@host_port[0], @host_port[1], :ssl => @ssl)
       end
       user_db = con.db(@db)
       user_db.authenticate(@user, @password)

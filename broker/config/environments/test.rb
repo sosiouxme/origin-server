@@ -46,7 +46,8 @@ Broker::Application.configure do
     :db => "openshift_broker_dev",
     :collections => {:user => "user",
                      :district => "district",
-                     :application_template => "template"}
+                     :application_template => "template"},
+    :ssl => "false"
   }
 
   config.usage_tracking = {
