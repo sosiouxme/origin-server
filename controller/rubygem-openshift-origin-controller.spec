@@ -5,7 +5,7 @@
 
 Summary:        Cloud Development Controller
 Name:           rubygem-%{gemname}
-Version: 1.0.10
+Version: 1.0.11
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -65,6 +65,10 @@ rm -rf %{buildroot}
 %{gemdir}/specifications/%{gemname}-%{version}.gemspec
 
 %changelog
+* Tue Jan 08 2013 Chris Alfonso <calfonso@redhat.com> 1.0.11-1
+- Adding mongo SSL connection support, default is SSL is off
+  (calfonso@redhat.com)
+
 * Thu Dec 20 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.10-1
 - Removing our ruby- subpackages (bleanhar@redhat.com)
 
