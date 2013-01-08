@@ -9,7 +9,7 @@
 
 Summary:        OpenShift Origin Management Console
 Name:           rubygem-%{gem_name}
-Version:        1.0.3
+Version:        1.0.5
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -122,6 +122,10 @@ rm -rf %{buildroot}
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Tue Jan 08 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
+- BZ892990 - The server address should not be "localhost" on user account info
+  page (bleanhar@redhat.com)
+
 * Thu Nov 01 2012 Adam Miller <admiller@redhat.com> 1.0.3-1
 - Merge pull request #814 from
   smarterclayton/bug_872055_relative_paths_not_generated_for_404
