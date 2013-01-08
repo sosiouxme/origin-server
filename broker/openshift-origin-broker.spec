@@ -3,7 +3,7 @@
 
 Summary:   OpenShift Origin broker components
 Name:      openshift-origin-broker
-Version:   1.0.8
+Version:   1.0.9
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -183,6 +183,10 @@ chcon -R -t httpd_var_run_t %{brokerdir}/httpd/run
 /sbin/restorecon -R -v /var/run
 
 %changelog
+* Tue Jan 08 2013 Chris Alfonso <calfonso@redhat.com> 1.0.9-1
+- Adding mongo SSL connection support, default is SSL is off
+  (calfonso@redhat.com)
+
 * Tue Jan 08 2013 Luke Meyer <lmeyer@redhat.com> 1.0.8-1
 - BZ876324 resolve ServerName/NameVirtualHost situation for
   node/broker/ssl.conf (lmeyer@redhat.com)
