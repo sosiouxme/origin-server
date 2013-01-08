@@ -7,7 +7,7 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version: 1.0.9
+Version: 1.0.10
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -151,6 +151,10 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Tue Jan 08 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-1
+- BZ876324 resolve ServerName/NameVirtualHost situation for
+  node/broker/ssl.conf (lmeyer@redhat.com)
+
 * Thu Dec 20 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.9-1
 - Removing our ruby- subpackages (bleanhar@redhat.com)
 
