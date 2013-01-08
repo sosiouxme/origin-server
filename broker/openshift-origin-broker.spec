@@ -3,7 +3,7 @@
 
 Summary:   OpenShift Origin broker components
 Name:      openshift-origin-broker
-Version:   1.0.7
+Version:   1.0.8
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -183,6 +183,10 @@ chcon -R -t httpd_var_run_t %{brokerdir}/httpd/run
 /sbin/restorecon -R -v /var/run
 
 %changelog
+* Tue Jan 08 2013 Luke Meyer <lmeyer@redhat.com> 1.0.8-1
+- BZ876324 resolve ServerName/NameVirtualHost situation for
+  node/broker/ssl.conf (lmeyer@redhat.com)
+
 * Fri Dec 21 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.7-1
 - Test fix for recent caching change (bleanhar@redhat.com)
 - Minor tweak to the broker log owner/mode issue (bleanhar@redhat.com)
