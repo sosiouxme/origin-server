@@ -153,6 +153,9 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Wed Jan 09 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-2
+- fix for BZ 893346 - permissions on .httpd.d (lmeyer@redhat.com)
+
 * Tue Jan 08 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-1
 - BZ876324 resolve ServerName/NameVirtualHost situation for
   node/broker/ssl.conf (lmeyer@redhat.com)
