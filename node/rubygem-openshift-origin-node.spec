@@ -7,8 +7,8 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version: 1.0.10
-Release:        2%{?dist}
+Version:	1.0.10
+Release:        3%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            http://openshift.redhat.com
@@ -124,8 +124,8 @@ rm -rf %{buildroot}
 %attr(0750,-,-) %{_sysconfdir}/httpd/conf.d/openshift
 %attr(0750,-,-) %{_sysconfdir}/httpd/conf.d/openshift
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/000001_openshift_origin_node.conf
-%attr(0755,-,-) %{_var}/lib/openshift
-%attr(0750,-,-) %{_var}/lib/openshift/.httpd.d
+%attr(0755,-,-) %{appdir}
+%attr(0750,root,apache) %{appdir}/.httpd.d
 
 #%if 0%{?fedora}%{?rhel} <= 6
 %attr(0755,-,0)	%{_initddir}/openshift-cgroups
