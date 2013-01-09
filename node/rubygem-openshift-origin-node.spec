@@ -153,6 +153,9 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Wed Jan 09 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-3
+- refix BZ 893346 - permissions on .httpd.d (lmeyer@redhat.com)
+
 * Wed Jan 09 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-2
 - fix for BZ 893346 - permissions on .httpd.d (lmeyer@redhat.com)
 
