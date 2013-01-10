@@ -1,6 +1,6 @@
 Summary:       Script to configure HAProxy to do port forwarding from internal to external port
 Name:          openshift-origin-port-proxy
-Version: 1.0.2
+Version: 1.0.3
 Release:       1%{?dist}
 Group:         Network/Daemons
 License:       ASL 2.0
@@ -88,6 +88,10 @@ fi
 %config(noreplace) %{_sysconfdir}/openshift/port-proxy.cfg
 
 %changelog
+* Thu Jan 10 2013 Chris Alfonso <calfonso@redhat.com> 1.0.3-1
+- BZ893307  openshift-origin-port-proxy: openshift-port-proxy-cfg lockwrap()
+  tmp file creation (rmillner@redhat.com)
+
 * Fri Dec 07 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.2-1
 - BZ876939 - Return "FAILED" if trying to stop openshift-port-proxy which is
   already stopped (bleanhar@redhat.com)
