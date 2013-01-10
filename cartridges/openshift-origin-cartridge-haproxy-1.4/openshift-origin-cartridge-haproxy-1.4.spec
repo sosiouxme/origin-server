@@ -3,7 +3,7 @@
 
 Summary:   Provides embedded haproxy-1.4 support
 Name:      openshift-origin-cartridge-haproxy-1.4
-Version: 1.0.2
+Version: 1.0.3
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -93,6 +93,14 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Jan 10 2013 Chris Alfonso <calfonso@redhat.com> 1.0.3-1
+- BZ892909 copying the file to just modify it inplace is a waste of ressource,
+  and a security problem, since the file /tmp/haproxy.cfg.$$ has a predictible
+  name and there is no check to see if it already exist or if it was changed
+  between sed and cat ( or cat and cp ). A attacker with access to /tmp could
+  just create directory with the same name to create a DOS and erase haproxy
+  configuration. (misc@zarb.org)
+
 * Mon Nov 12 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.2-1
 - Fix for Bug 874445 (jhonce@redhat.com)
 
