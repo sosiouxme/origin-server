@@ -9,7 +9,7 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.11
+Version:   0.0.12
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -159,6 +159,9 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Fri Jan 11 2013 Luke Meyer <lmeyer@redhat.com> 0.0.12-1
+- separate out console and broker realms per BZ893369 (lmeyer@redhat.com)
+
 * Tue Dec 11 2012 Brenton Leanhardt <bleanhar@redhat.com> 0.0.11-1
 - BZ886159 - Moving the console port from 3128 to 8118 (bleanhar@redhat.com)
 
