@@ -8,7 +8,7 @@
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
 Version:	1.0.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            http://openshift.redhat.com
@@ -93,6 +93,7 @@ mkdir -p %{buildroot}%{apprundir}
 mv %{buildroot}%{geminstdir}/misc/doc/cgconfig.conf %{buildroot}%{_docdir}/%{name}-%{version}/cgconfig.conf
 
 mv httpd/000001_openshift_origin_node.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
+mv httpd/000001_openshift_origin_node_servername.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 #%if 0%{?fedora}%{?rhel} <= 6
 mkdir -p %{buildroot}%{_initddir}
@@ -106,7 +107,7 @@ cp %{buildroot}%{geminstdir}/misc/init/openshift-cgroups %{buildroot}%{_initddir
 rm -rf %{buildroot}%{geminstdir}/misc
 
 %clean
-rm -rf %{buildroot}                                
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
@@ -122,8 +123,8 @@ rm -rf %{buildroot}
 %{_libexecdir}/openshift/lib/teardown_pam_fs_limits.sh
 %config(noreplace) %{_sysconfdir}/openshift/node.conf
 %attr(0750,-,-) %{_sysconfdir}/httpd/conf.d/openshift
-%attr(0750,-,-) %{_sysconfdir}/httpd/conf.d/openshift
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/000001_openshift_origin_node.conf
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/000001_openshift_origin_node_servername.conf
 %attr(0755,-,-) %{appdir}
 %attr(0750,root,apache) %{appdir}/.httpd.d
 
