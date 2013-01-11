@@ -3,8 +3,8 @@
 
 Summary:   OpenShift Origin broker components
 Name:      openshift-origin-broker
-Version:   1.0.9
-Release:   2%{?dist}
+Version:   1.0.10
+Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
 URL:       http://openshift.redhat.com
@@ -185,6 +185,9 @@ chcon -R -t httpd_var_run_t %{brokerdir}/httpd/run
 /sbin/restorecon -R -v /var/run
 
 %changelog
+* Fri Jan 11 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-1
+- Separate realm for broker from console BZ893369
+
 * Tue Jan 08 2013 Chris Alfonso <calfonso@redhat.com> 1.0.9-1
 - Adding mongo SSL connection support, default is SSL is off
   (calfonso@redhat.com)
