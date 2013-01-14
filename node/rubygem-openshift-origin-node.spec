@@ -8,7 +8,7 @@
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
 Version:	1.0.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            http://openshift.redhat.com
@@ -154,6 +154,8 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Mon Jan 14 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-5
+- Re-tag for a happier tito
 * Wed Jan 09 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-3
 - refix BZ 893346 - permissions on .httpd.d (lmeyer@redhat.com)
 
