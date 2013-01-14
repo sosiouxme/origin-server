@@ -20,7 +20,7 @@
         = link_to "Learn more", application_type.learn_more_url
       %h5 What you get
       %ul.unstyled
-        %li A public rhcloud.com domain name
+        %li A subdomain on #{Console.config.api[:suffix]}
         %li Web requests automatically routed to your app
         - unless application_type.template.nil?
           - application_type.template.included_cartridges.map(&:display_name).each do |cart_name|
