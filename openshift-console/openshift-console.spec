@@ -9,7 +9,7 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.12
+Version:   0.0.13
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -159,6 +159,10 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Mon Jan 14 2013 Brenton Leanhardt <bleanhar@redhat.com> 0.0.13-1
+- BZ893895 - "File a bug" link should be Openshift Enterprise
+  (bleanhar@redhat.com)
+
 * Fri Jan 11 2013 Luke Meyer <lmeyer@redhat.com> 0.0.12-1
 - separate out console and broker realms per BZ893369 (lmeyer@redhat.com)
 
