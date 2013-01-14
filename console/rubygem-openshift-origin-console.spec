@@ -9,7 +9,7 @@
 
 Summary:        OpenShift Origin Management Console
 Name:           rubygem-%{gem_name}
-Version:        1.0.5
+Version:        1.0.6
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -122,6 +122,10 @@ rm -rf %{buildroot}
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Mon Jan 14 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.6-1
+- BZ893288 - [Console] We should tell them the actual cloud domain they get,
+  not rhcloud.com (bleanhar@redhat.com)
+
 * Tue Jan 08 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
 - BZ892990 - The server address should not be "localhost" on user account info
   page (bleanhar@redhat.com)
