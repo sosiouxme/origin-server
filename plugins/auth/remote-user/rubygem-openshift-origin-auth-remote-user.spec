@@ -7,7 +7,7 @@
 
 Summary:        OpenShift Origin plugin for remote-user authentication
 Name:           rubygem-%{gemname}
-Version:        1.0.3
+Version:        1.0.4
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -76,6 +76,9 @@ rm -rf %{buildroot}
 %{_sysconfdir}/openshift/plugins.d/openshift-origin-auth-remote-user.conf.example
 
 %changelog
+* Tue Jan 15 2013 Luke Meyer <lmeyer@redhat.com> 1.0.4-1
+- separate out console and broker realms per BZ893369 (lmeyer@redhat.com)
+
 * Thu Nov 01 2012 Adam Miller <admiller@redhat.com> 1.0.3-1
 - BZ872112 - Specifying package dependencies for Kerberos setup
   (bleanhar@redhat.com)
