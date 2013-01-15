@@ -75,6 +75,13 @@ rm -rf %{buildroot}
 %{brokerdir}/httpd/conf.d/%{gemname}-kerberos.conf.sample
 %{_sysconfdir}/openshift/plugins.d/openshift-origin-auth-remote-user.conf.example
 
+%post
+
+if [ $1 -ne 1 ] # this is an update; fix the previously configured realm.
+then
+  sed -i -e 's/AuthName.*/AuthName "OpenShift Broker API"/' /var/www/openshift/broker/httpd/conf.d/openshift-origin-auth-remote-user.conf
+fi
+
 %changelog
 * Tue Jan 15 2013 Luke Meyer <lmeyer@redhat.com> 1.0.4-1
 - separate out console and broker realms per BZ893369 (lmeyer@redhat.com)
