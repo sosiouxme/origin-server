@@ -8,7 +8,7 @@
 Summary:        OpenShift Origin plugin for remote-user authentication
 Name:           rubygem-%{gemname}
 Version:        1.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            http://openshift.redhat.com
@@ -83,6 +83,9 @@ then
 fi
 
 %changelog
+* Tue Jan 15 2013 Luke Meyer <lmeyer@redhat.com> 1.0.4-2
+- %%post script to fix the realm from any previous install. (lmeyer@redhat.com)
+
 * Tue Jan 15 2013 Luke Meyer <lmeyer@redhat.com> 1.0.4-1
 - separate out console and broker realms per BZ893369 (lmeyer@redhat.com)
 
