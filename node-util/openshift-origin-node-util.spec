@@ -1,6 +1,6 @@
 Summary:        Utility scripts for the OpenShift Origin broker
 Name:           openshift-origin-node-util
-Version:        1.0.6
+Version:        1.0.7
 Release:        1%{?dist}
 
 Group:          Network/Daemons
@@ -98,6 +98,9 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/restorecon /usr/sbin/oo-restorer* || :
 
 %changelog
+* Tue Jan 15 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.7-1
+- Tweaking the regex in restorer.php and escaping the arg (bleanhar@redhat.com)
+
 * Thu Dec 06 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.6-1
 - Removing oo-setup-node from Enterprise (bleanhar@redhat.com)
 
