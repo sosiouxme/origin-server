@@ -155,6 +155,10 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Thu Jan 17 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.10-6
+- BZ896406 - warning message when installing rubygem-openshift-origin-node
+  (bleanhar@redhat.com)
+
 * Mon Jan 14 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-5
 - Re-tag for a happier tito
 * Wed Jan 09 2013 Luke Meyer <lmeyer@redhat.com> 1.0.10-3
