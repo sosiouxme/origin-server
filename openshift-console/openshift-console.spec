@@ -9,8 +9,8 @@
 
 Summary:   The OpenShift Enterprise Management Console
 Name:      openshift-console
-Version:   0.0.13
-Release:   2%{?dist}
+Version:   0.0.14
+Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
 URL:       http://openshift.redhat.com
@@ -159,6 +159,10 @@ chcon -R -t httpd_var_run_t %{consoledir}/httpd/run
 /sbin/restorecon -R -v /var/run
 /sbin/restorecon -rv %{gemdir}/passenger*
 %changelog
+* Thu Jan 17 2013 Chris Alfonso <calfonso@redhat.com> 0.0.14-1
+- BZ896363 - "the User Guide" link should redirect to an existing url
+  (calfonso@redhat.com)
+
 * Wed Jan 16 2013 Brenton Leanhardt <bleanhar@redhat.com> 0.0.13-2
 - Removing the 'noreplace' macro from the development and production.rb for the
   console. (bleanhar@redhat.com)
