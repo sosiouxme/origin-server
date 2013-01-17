@@ -8,7 +8,7 @@
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
 Version:	1.0.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            http://openshift.redhat.com
@@ -25,6 +25,7 @@ Requires:       rubygem(rcov)
 Requires:       python
 Requires:       libselinux-python
 Requires:       mercurial
+Requires:       httpd
 
 %if 0%{?fedora}%{?rhel} <= 6
 Requires:       libcgroup
@@ -129,7 +130,7 @@ rm -rf %{buildroot}
 %attr(0750,root,apache) %{appdir}/.httpd.d
 
 #%if 0%{?fedora}%{?rhel} <= 6
-%attr(0755,-,0)	%{_initddir}/openshift-cgroups
+%attr(0755,-,-)	%{_initddir}/openshift-cgroups
 #%else
 #%attr(0750,-,-) /etc/systemd/system
 #%endif
