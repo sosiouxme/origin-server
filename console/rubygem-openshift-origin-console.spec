@@ -9,7 +9,7 @@
 
 Summary:        OpenShift Origin Management Console
 Name:           rubygem-%{gem_name}
-Version:        1.0.7
+Version:        1.0.8
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -122,6 +122,9 @@ rm -rf %{buildroot}
 %{gem_dir}/doc/%{gem_name}-%{version}
 
 %changelog
+* Wed Jan 23 2013 Chris Alfonso <calfonso@redhat.com> 1.0.8-1
+- Revised formtastic to handle hints for inline elements (hripps@redhat.com)
+
 * Fri Jan 18 2013 Chris Alfonso <calfonso@redhat.com> 1.0.7-1
 - BZ895347 - Should delete all the mongodb cartridge pages and the links about
   mongodb (not for upstream) (calfonso@redhat.com)
