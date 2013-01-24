@@ -2,7 +2,7 @@
 
 Summary:   Provides ruby rack support running on Phusion Passenger
 Name:      openshift-origin-cartridge-ruby-1.8
-Version: 1.0.5
+Version: 1.0.6
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -132,6 +132,10 @@ rm -rf %{buildroot}
 %doc %{cartridgedir}/LICENSE
 
 %changelog
+* Thu Jan 24 2013 Chris Alfonso <calfonso@redhat.com> 1.0.6-1
+- BZ903546 - Links to ruby-lang.org redirects to wrong url
+  (calfonso@redhat.com)
+
 * Tue Dec 11 2012 Chris Alfonso <calfonso@redhat.com> 1.0.5-1
 - BZ855264 - Can't 'rhc app tail' ruby app error_log file when the server's
   timezone is not EST. (calfonso@redhat.com)
