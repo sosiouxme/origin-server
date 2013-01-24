@@ -2,7 +2,7 @@
 
 Summary:   Provides ruby rack support running on Phusion Passenger
 Name:      openshift-origin-cartridge-ruby-1.9-scl
-Version: 1.0.6
+Version: 1.0.7
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -206,6 +206,10 @@ rm -rf %{buildroot}
 %doc %{cartridgedir}/LICENSE
 
 %changelog
+* Thu Jan 24 2013 Chris Alfonso <calfonso@redhat.com> 1.0.7-1
+- BZ903546 - Links to ruby-lang.org redirects to wrong url
+  (calfonso@redhat.com)
+
 * Wed Dec 12 2012 Chris Alfonso <calfonso@redhat.com> 1.0.6-1
 - Automatic commit of package [openshift-origin-cartridge-ruby-1.9-scl] release
   [1.0.5-1]. (calfonso@redhat.com)
