@@ -2,7 +2,7 @@
 
 Summary:   Provides php-5.3 support
 Name:      openshift-origin-cartridge-php-5.3
-Version: 1.0.4
+Version: 1.0.5
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -118,6 +118,13 @@ rm -rf %{buildroot}
 %doc %{cartridgedir}/LICENSE
 
 %changelog
+* Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
+- Merge pull request #36 from brenton/BZ905021
+  (dmcphers+openshiftbot@redhat.com)
+- Bug 905021 Move PHPRC from app_ctl_pre.sh to app_ctl.sh - otherwise its not
+  set/sourced in for apache (php appserver) running on the haproxy gear.
+  (ramr@redhat.com)
+
 * Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.4-1
 - Bug 887353: removing a cartridge leaves info/ dir (miciah.masters@gmail.com)
 
