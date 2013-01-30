@@ -2,7 +2,7 @@
 %global frameworkdir %{_libexecdir}/openshift/cartridges/mysql-5.1
 
 Name: openshift-origin-cartridge-mysql-5.1
-Version: 1.0.4
+Version: 1.0.5
 Release: 1%{?dist}
 Summary: Provides embedded mysql support
 
@@ -82,6 +82,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.5-1
+- Bug 887353: removing a cartridge leaves info/ dir (miciah.masters@gmail.com)
+
 * Mon Nov 12 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.4-1
 - Fix for Bug 874445 (jhonce@redhat.com)
 
