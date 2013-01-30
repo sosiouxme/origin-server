@@ -3,7 +3,7 @@
 
 Summary:   Provides embedded haproxy-1.4 support
 Name:      openshift-origin-cartridge-haproxy-1.4
-Version: 1.0.3
+Version: 1.0.4
 Release:   1%{?dist}
 Group:     Network/Daemons
 License:   ASL 2.0
@@ -95,6 +95,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.4-1
+- Bug 887353: removing a cartridge leaves info/ dir (miciah.masters@gmail.com)
+
 * Thu Jan 10 2013 Chris Alfonso <calfonso@redhat.com> 1.0.3-1
 - BZ892909 copying the file to just modify it inplace is a waste of ressource,
   and a security problem, since the file /tmp/haproxy.cfg.$$ has a predictible
