@@ -7,8 +7,8 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version:	1.0.10
-Release:        6%{?dist}
+Version:	1.0.11
+Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            http://openshift.redhat.com
@@ -155,6 +155,10 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Wed Jan 30 2013 Luke Meyer <lmeyer@redhat.com> 1.0.11-1
+- <facter,resource_limits> reckon by gears (as opposed to git repos), add gear
+  status facts US3239 (lmeyer@redhat.com)
+
 * Thu Jan 17 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.10-6
 - BZ896406 - warning message when installing rubygem-openshift-origin-node
   (bleanhar@redhat.com)
