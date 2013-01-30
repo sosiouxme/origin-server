@@ -4,7 +4,7 @@
 
 Summary:   Provides JBossEWS1.0 support
 Name:      openshift-origin-cartridge-jbossews-1.0
-Version:   1.0.11
+Version:   1.0.12
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -138,6 +138,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.12-1
+- Bug 887353: removing a cartridge leaves info/ dir (miciah.masters@gmail.com)
+
 * Fri Nov 02 2012 Adam Miller <admiller@redhat.com> 1.0.11-1
 - BZ872533 (bdecoste@gmail.com)
 - BZ872533 (bdecoste@gmail.com)
