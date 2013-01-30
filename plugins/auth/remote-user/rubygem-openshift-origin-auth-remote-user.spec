@@ -79,7 +79,13 @@ rm -rf %{buildroot}
 
 if [ $1 -ne 1 ] # this is an update; fix the previously configured realm.
 then
-  sed -i -e 's/AuthName.*/AuthName "OpenShift Broker API"/' /var/www/openshift/broker/httpd/conf.d/openshift-origin-auth-remote-user.conf
+  # We ship the .conf.example file, not the .conf file.  The latter will
+  # only be there if the user has enabled the plugin, so we must check
+  # for its presence.
+  if [ -f /var/www/openshift/broker/httpd/conf.d/openshift-origin-auth-remote-user.conf ]
+  then
+    sed -i -e 's/AuthName.*/AuthName "OpenShift Broker API"/' /var/www/openshift/broker/httpd/conf.d/openshift-origin-auth-remote-user.conf
+  fi
 fi
 
 %changelog
