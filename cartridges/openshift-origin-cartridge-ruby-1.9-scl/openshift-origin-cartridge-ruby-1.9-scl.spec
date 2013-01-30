@@ -2,7 +2,7 @@
 
 Summary:   Provides ruby rack support running on Phusion Passenger
 Name:      openshift-origin-cartridge-ruby-1.9-scl
-Version: 1.0.7
+Version: 1.0.8
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -208,6 +208,11 @@ rm -rf %{buildroot}
 %doc %{cartridgedir}/LICENSE
 
 %changelog
+* Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.8-1
+- Merge pull request #29 from Miciah/bug-887353-removing-a-cartridge-leaves-
+  its-info-directory (dmcphers+openshiftbot@redhat.com)
+- Bug 887353: removing a cartridge leaves info/ dir (miciah.masters@gmail.com)
+
 * Thu Jan 24 2013 Chris Alfonso <calfonso@redhat.com> 1.0.7-1
 - BZ903546 - Links to ruby-lang.org redirects to wrong url
   (calfonso@redhat.com)
