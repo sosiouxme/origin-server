@@ -2,8 +2,8 @@
 %global frameworkdir %{_libexecdir}/openshift/cartridges/postgresql-8.4
 
 Name: openshift-origin-cartridge-postgresql-8.4
-Version: 1.0.2
-Release: 1%{?dist}
+Version: 1.0.3
+Release: 2%{?dist}
 Summary: Provides embedded PostgreSQL support
 
 Group: Network/Daemons
@@ -103,6 +103,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-2
+- Bug 887353: removing a cartridge leaves info/ dir (miciah.masters@gmail.com)
+
+* Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com>
+- Bug 887353: removing a cartridge leaves info/ dir (miciah.masters@gmail.com)
+
 * Thu Nov 01 2012 Adam Miller <admiller@redhat.com> 1.0.2-1
 - Cleanup deprecated env vars during db deconfigure. (mpatel@redhat.com)
 
