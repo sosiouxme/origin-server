@@ -1,6 +1,6 @@
 Summary:        M-Collective agent file for openshift-origin-msg-node-mcollective
 Name:           openshift-origin-msg-node-mcollective
-Version: 1.0.2
+Version: 1.0.3
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -51,6 +51,10 @@ cp facts/update_yaml.rb %{buildroot}/usr/libexec/mcollective/
 
 
 %changelog
+* Wed Jan 30 2013 Luke Meyer <lmeyer@redhat.com> 1.0.3-1
+- <facter,resource_limits> reckon by gears (as opposed to git repos), add gear
+  status facts US3239 (lmeyer@redhat.com)
+
 * Tue Jan 15 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.2-1
 - BZ 876942: Disable threading until we can explore proper concurrency
   management (rmillner@redhat.com)
