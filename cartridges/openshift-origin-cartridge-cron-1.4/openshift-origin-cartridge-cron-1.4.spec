@@ -3,7 +3,7 @@
 
 
 Name: openshift-origin-cartridge-cron-1.4
-Version: 1.0.2
+Version: 1.0.3
 Release: 1%{?dist}
 Summary: Embedded cron support for express
 
@@ -89,6 +89,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.3-1
+- Bug 887353: removing a cartridge leaves info/ dir (miciah.masters@gmail.com)
+
 * Mon Nov 12 2012 Brenton Leanhardt <bleanhar@redhat.com> 1.0.2-1
 - Eliminate duplicate version of this script. (rmillner@redhat.com)
 
