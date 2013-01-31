@@ -7,7 +7,7 @@
 
 Summary:        Cloud Development Node
 Name:           rubygem-%{gemname}
-Version:	1.0.11
+Version:	1.0.12
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        ASL 2.0
@@ -155,6 +155,10 @@ if ! [ -f /etc/openshift/resource_limits.conf ]; then
 fi
 
 %changelog
+* Thu Jan 31 2013 Luke Meyer <lmeyer@redhat.com> 1.0.12-1
+- <facter,resource_limits> active_capacity/max_active_apps/etc switched to
+  gear-based accounting (lmeyer@redhat.com)
+
 * Wed Jan 30 2013 Luke Meyer <lmeyer@redhat.com> 1.0.11-1
 - <facter,resource_limits> reckon by gears (as opposed to git repos), add gear
   status facts US3239 (lmeyer@redhat.com)
