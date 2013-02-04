@@ -4,7 +4,7 @@
 
 Summary:   Provides JBossEWS1.0 support
 Name:      openshift-origin-cartridge-jbossews-1.0
-Version:   1.0.12
+Version:   1.0.13
 Release:   1%{?dist}
 Group:     Development/Languages
 License:   ASL 2.0
@@ -138,6 +138,10 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Feb 04 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.13-1
+- Bug 906845 - create default resource settings for AS/EAP/EWS carts
+  (bleanhar@redhat.com)
+
 * Wed Jan 30 2013 Brenton Leanhardt <bleanhar@redhat.com> 1.0.12-1
 - Bug 887353: removing a cartridge leaves info/ dir (miciah.masters@gmail.com)
 
