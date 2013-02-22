@@ -37,8 +37,7 @@ in logical and concrete terms.
 Explains, step-by-step, how to create a new cartridge.
 
 * [Communication between Broker and Node](./communication-between-broker-and-node.md).
-Describes how cartridges such haproxy and jenkins authenticate with the broker
-to carry out certain operations.
+Describes how the broker commands a node to carry out certain operations.
 
 * [Console](../console/README.md).  Describes configuration and development
 guidelines.

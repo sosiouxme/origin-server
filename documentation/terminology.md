@@ -1,7 +1,7 @@
 Glossary
 ========
 
-Following is a glossary of terms for key high-level concepts within OpenShift.
+Following is a glossary of terms for key low-level concepts within OpenShift.
 
 <dl>
   <dt>The abstract cartridge</dt>
@@ -9,14 +9,17 @@ Following is a glossary of terms for key high-level concepts within OpenShift.
 
   <dt>Application</dt>
   <dd>A set of one or more instantiated cartridges running on one or more gears.</dd>
+  <dd>Sometimes confounded with the term "gear" as an application often has only one gear, but conceptually it is a container of gears.</dd>
 
   <dt>Cartridge</dt>
   <dd>A plug-in that is installed on nodes, and is instantiated in ("added to" or "embedded in") gears, that provides functionality to applications running on OpenShift.</dd>
-  <dd>An instance of a cartridge.</dd>
-  <dd>Synonym for "regular cartridge."</dd>
+  <dd>A cartridge instantiation into a particular gear.</dd>
+
+  <dt>Container</dt>
+  <dd>When used without clarifying context in code or docs, refers to a gear.</dd>
 
   <dt>Custom cartridge</dt>
-  <dd>A cartridge that is not shipped with OpenShift Enterprise.</dd>
+  <dd>A cartridge not supplied as part of the OpenShift Origin/Online/Enterprise projects, but rather created custom for an installation of OpenShift.</dd>
 
   <dt>Gear</dt>
   <dd>A container that includes a limited amount of CPU resources, memory, and storage.  A gear is hosted on a node and can be thought of as a VM, but it is implemented as a Unix user and contained using cgroups, SELinux, and other Linux security features instead of virtualisation.</dd>
