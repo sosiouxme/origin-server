@@ -105,6 +105,9 @@ need to comb through the source code or watch the request log to discover
 the expected parameters and their meanings. N.B.: you will also see that
 the client often supplies parameters that are unnecessary.
 
+For far more detailed examples of MCollective actions on a node, 
+[here are many gory details](../plugins/msg-node/mcollective/example-mcollective-node-actions.md).
+
 ### Other available actions ###
 
 Other _action methods defined in the [node
