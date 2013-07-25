@@ -29,6 +29,16 @@ Broker::Application.configure do
         :first_uid => conf.get("DISTRICTS_FIRST_UID", "1000").to_i,
       },
       :node_profile_enabled => conf.get_bool("NODE_PROFILE_ENABLED", "false"),
+      :mock => {
+        :enabled => conf.get_bool("MOCK_ENABLED", "false"),
+        :node_base_name => conf.get("MOCK_NODE_BASE_NAME", "mocknode"),
+      },
     }
+
+    if config.msg_broker[:mock][:enabled]
+      interface = OpenShift::ApplicationContainerProxy
+      raise "Mcollective proxy should have loaded before Mock proxy" if interface.provider == interface
+      interface.provider = OpenShift::MockApplicationContainerProxy
+    end
   end
 end
