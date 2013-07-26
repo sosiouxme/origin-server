@@ -1,7 +1,3 @@
-require 'mcollective'
-require 'open-uri'
-
-include MCollective::RPC
 
 #
 # The OpenShift module is a namespace for all OpenShift related objects and
@@ -9,21 +5,23 @@ include MCollective::RPC
 #
 module OpenShift
 
-    # Implements the broker-node communications This class the state
-    # of a node and a set of RPC functions to the node.  It also has a
-    # set of just plain functions which live here because they relate
-    # to broker/node communications.
+    # This proxy wraps the MCollective proxy to enable creating and reporting on
+    # fake applications from fake nodes. It is put in place when the "MOCK_ENABLE"
+    # configuration setting is true.
     #
-    class MCollectiveApplicationContainerProxy < OpenShift::ApplicationContainerProxy
-
-      # the "cartridge" for Node operation messages to "cartridge_do"
-      @@C_CONTROLLER = 'openshift-origin-node'
+    # Requests are passed on to the real proxy unless they involve applications,
+    # nodes, or districts with names beginning with "mock". An actual node is
+    # still necessary for e.g. getting the cartridge list.
+    class MockApplicationContainerProxy < OpenShift::ApplicationContainerProxy
 
       # A Node ID string
       attr_accessor :id
 
       # A District ID string
       attr_accessor :district
+
+      # register the real proxy as sometimes it will be needed.
+      @@actual_proxy = OpenShift::MCollectiveApplicationContainerProxy
 
       # <<constructor>>
       #
@@ -34,37 +32,136 @@ module OpenShift
       # * district: <type> - a classifier for app placement
       #
       def initialize(id, district=nil)
+        @is_mock = id.start_with?(Rails.application.config.msg_broker[:mock][:node_base_name])
+        @actual_proxy = @@actual_proxy.new(id, district)
         @id = id
         @district = district
       end
 
-      # <<class method>>
-      #
-      # Determine what gear sizes are valid for a given user
-      #
-      # INPUT:
-      # * user: a reference to a user object
-      #
-      # RETURN:
-      # * list of strings: names of gear sizes
-      #
-      # NOTE:
-      # * an operation on User?
-      # * Uses only operations and attributes of user
-      #
-      def self.valid_gear_sizes_impl(user)
-        user_capabilities = user.get_capabilities
-        capability_gear_sizes = []
-        capability_gear_sizes = user_capabilities['gear_sizes'] if user_capabilities.has_key?('gear_sizes')
+      # #####################################
+      # Automatically mock a bunch of methods:
+      # #####################################
 
-        if user.auth_method == :broker_auth
-          return Rails.configuration.openshift[:gear_sizes] | capability_gear_sizes
-        elsif !capability_gear_sizes.nil? and !capability_gear_sizes.empty?
-          return capability_gear_sizes
-        else
-          return Rails.configuration.openshift[:default_gear_capabilities]
+      # pass class methods to real proxy class if we don't override
+      def self.method_missing(meth, *args, &block)
+        Rails.logger.debug "DEBUG: MockAppProxy: proxying missing class method #{meth} to actual proxy"
+        #define_singleton_method(meth) { @@actual_proxy.send(meth, *args, &block) }
+        @@actual_proxy.send(meth, *args, &block)
+      end
+      # pass instance methods to real proxy instance if we don't override
+      def method_missing(meth, *args, &block)
+        Rails.logger.debug "DEBUG: MockAppProxy: proxying missing instance method #{meth} to actual proxy"
+        #self.class.define_method(meth) { @actual_proxy.send(meth, *args, &block) }
+        @actual_proxy.send(meth, *args, &block)
+      end
+
+      # centralized instance "@is_mock" checking; if against a mock node,
+      # then call the method with _mock; else send to the real proxy.
+      %w[ get_quota ].each do |meth|
+        define_method meth.to_sym, ->(*args, &block) do
+          @is_mock ? send("#{meth}_mock".to_sym, *args, &block)
+                   : @actual_proxy.send(meth.to_sym, *args, &block)
         end
       end
+
+      # automatic "success!" message for some mocked methods
+      %w[ destroy ].each do |meth|
+        define_method meth.to_sym, ->(*args, &block) do
+          @is_mock ? "Success!" : @actual_proxy.send(meth.to_sym, *args, &block)
+        end
+      end
+
+      # #####################################
+      # Mock methods with some logic
+      # #####################################
+
+      # Mock the disk quotas from a Gear on a node
+      #
+      # RETURNS:
+      # * an array with following information:
+      #
+      # [Filesystem, blocks_used, blocks_soft_limit, blocks_hard_limit,
+      # inodes_used, inodes_soft_limit, inodes_hard_limit]
+      #
+      # RAISES:
+      # * OpenShift::NodeException if app name includes "breakquota"
+      #
+      def get_quota_mock(gear)
+        raise OpenShift::NodeException.new("Mocked node exception error", 143) if gear.app.name.include? "breakquota"
+        ['/var/lib/openshift', 1024, 2048, 2048, 100, 1000, 2000]
+      end
+
+      def self.valid_gear_sizes_impl(user)
+        @is_mock_user?(user) ? Rails.configuration.openshift[:gear_sizes]
+                             : @@actual_proxy.valid_gear_sizes_impl(user)
+      end
+
+    def self.find_available_impl(node_profile=nil, district_uuid=nil, non_ha_server_identities=nil)
+      @proxy_provider.find_available_impl(node_profile, district_uuid, non_ha_server_identities)
+    end
+
+    def self.find_one(node_profile=nil)
+      @proxy_provider.find_one_impl(node_profile)
+    end
+
+    def self.get_all_gears(opts = {})
+      @proxy_provider.get_all_gears_impl(opts)
+    end
+
+    def self.get_all_active_gears
+      @proxy_provider.get_all_active_gears_impl
+    end
+
+    def self.get_all_gears_sshkeys
+      @proxy_provider.get_all_gears_sshkeys_impl
+    end
+
+    def self.execute_parallel_jobs(handle)
+      @proxy_provider.execute_parallel_jobs_impl(handle)
+    end
+
+    def self.get_details_for_all(name_list)
+      @proxy_provider.get_details_for_all_impl(name_list)
+    end
+
+
+      def self.is_mock_dist?(name)
+        name.start_with?(Rails.application.config.msg_broker[:mock][:dist_base_name])
+      end
+
+      def self.is_mock_node?(name)
+        name.start_with?(Rails.application.config.msg_broker[:mock][:node_base_name])
+      end
+
+      def self.is_mock_app?(name)
+        name.start_with?(Rails.application.config.msg_broker[:mock][:app_base_name])
+      end
+
+      def self.is_mock_user?(name)
+        name.start_with?(Rails.application.config.msg_broker[:mock][:user_base_name])
+      end
+
+      protected
+
+      # Wrap the log messages so it doesn't HAVE to be rails
+      def log_debug(message)
+        Rails.logger.debug message
+        puts message
+      end
+      def log_error(message)
+        Rails.logger.error message
+        puts message
+      end
+
+    end # proxy class
+
+
+
+    # ################################
+    # everything after here is TBD
+    # ################################
+
+    class PotentialProxyMethods
 
       # <<factory method>>
       #
@@ -129,108 +226,6 @@ module OpenShift
         MCollectiveApplicationContainerProxy.new(current_server)
       end
 
-      # <<orphan>>
-      # <<class method>>
-      #
-      # Return a list of blacklisted namespaces and app names.
-      # Implements superclass get_blacklisted() method.
-      #
-      # INPUTS:
-      # * none
-      #
-      # RETURNS:
-      # * empty list
-      #
-      # NOTES:
-      # * Is this really a function of the broker
-      #
-      def self.get_blacklisted_in_impl
-        []
-      end
-
-      # <<orphan>>
-      #
-      # <<class method>>
-      #
-      # INPUTS:
-      # * name: String.  A name to be checked against the blacklist
-      #
-      # RETURNS:
-      # * Boolean.  True if the name is in the blacklist
-      #
-      # NOTES:
-      # * This is really a function of the broker
-      #
-      def self.blacklisted_in_impl?(name)
-        false
-      end
-
-      # <<class method>>
-      #
-      # <<query>>
-      #
-      # Query all nodes for all available cartridges
-      #
-      # INPUTS:
-      # * none
-      #
-      # RETURNS:
-      # * An array of OpenShift::Cartridge objects
-      #
-      # NOTES:
-      # * uses execute_direct and @@C_CONTROLLER
-      #
-      def get_available_cartridges
-        args = Hash.new
-        args['--porcelain'] = true
-        args['--with-descriptors'] = true
-        result = execute_direct(@@C_CONTROLLER, 'cartridge-list', args, false)
-        result = parse_result(result)
-        cart_data = JSON.parse(result.resultIO.string)
-        cart_data.map! {|c| OpenShift::Cartridge.new.from_descriptor(YAML.load(c))}
-      end
-
-      # <<object method>>
-      #
-      # <<attribute getter>>
-      #
-      # Request the disk quotas from a Gear on a node
-      #
-      # RETURNS:
-      # * an array with following information:
-      #
-      # [Filesystem, blocks_used, blocks_soft_limit, blocks_hard_limit,
-      # inodes_used, inodes_soft_limit, inodes_hard_limit]
-      #
-      # RAISES:
-      # * OpenShift::NodeException
-      #
-      # NOTES
-      # * Uses execute_direct
-      # * A method on the gear object
-      #
-      def get_quota(gear)
-        args = Hash.new
-        args['--uuid'] = gear.uuid
-        reply = execute_direct(@@C_CONTROLLER, 'get-quota', args, false)
-
-        output = nil
-        exitcode = 0
-        if reply and reply.length > 0
-          mcoll_result = reply[0]
-          if (mcoll_result && (defined? mcoll_result.results) && !mcoll_result.results[:data].nil?)
-            output = mcoll_result.results[:data][:output]
-            exitcode = mcoll_result.results[:data][:exitcode]
-            raise OpenShift::NodeException.new("Failed to get quota for user: #{output}", 143) unless exitcode == 0
-          else
-            raise OpenShift::NodeException.new("Node execution failure (error getting result from node).  If the problem persists please contact Red Hat support.", 143)
-          end
-        else
-          raise OpenShift::NodeException.new("Node execution failure (error getting result from node).  If the problem persists please contact Red Hat support.", 143)
-        end
-        output
-      end
-
       # <<object method>>
       #
       # <<attribute setter>>
@@ -273,65 +268,6 @@ module OpenShift
           end
         else
           raise OpenShift::NodeException.new("Node execution failure (error getting result from node).  If the problem persists please contact Red Hat support.", 143)
-        end
-      end
-
-      # Reserve a UID within a district or service
-      #
-      # UIDs must be unique in a district to allow migration without requiring
-      # reassigning Username (Gear UUID) and Unix User UID on migrate
-      # Perhaps a query on the nodes for "next UID"?
-      #
-      # INPUTS:
-      # * district_uuid: String: District handle or identifier
-      # * preferred_uid: Integer
-      #
-      # RAISES:
-      # * OpenShift::OOException
-      #
-      # NOTES:
-      # * a method on District class of the node.
-      #
-      def reserve_uid(district_uuid=nil, preferred_uid=nil)
-        reserved_uid = nil
-        if Rails.configuration.msg_broker[:districts][:enabled]
-          if @district
-            district_uuid = @district.uuid
-          else
-            district_uuid = get_district_uuid unless district_uuid
-          end
-          if district_uuid && district_uuid != 'NONE'
-            reserved_uid = District::reserve_uid(district_uuid, preferred_uid)
-            raise OpenShift::OOException.new("uid could not be reserved in target district '#{district_uuid}'.  Please ensure the target district has available capacity.") unless reserved_uid
-          end
-        end
-        reserved_uid
-      end
-
-      # Release a UID reservation within a District
-      #
-      # UIDs must be unique in a district to allow migration without requiring
-      # reassigning Username (Gear UUID) and Unix User UID on migrate
-      # Perhaps a query on the nodes for "next UID"?
-      #
-      # INPUTS:
-      # * uid: Integer - the UID to unreserve within the district
-      # * district_uuid: String - district handle or identifier
-      #
-      # NOTES:
-      # * method on the District object.
-      #
-      def unreserve_uid(uid, district_uuid=nil)
-        if Rails.configuration.msg_broker[:districts][:enabled]
-          if @district
-            district_uuid = @district.uuid
-          else
-            district_uuid = get_district_uuid unless district_uuid
-          end
-          if district_uuid && district_uuid != 'NONE'
-            #cleanup
-            District::unreserve_uid(district_uuid, uid)
-          end
         end
       end
 
@@ -1246,26 +1182,6 @@ module OpenShift
       end
 
       #
-      # get information on a TCP port
-      #
-      # INPUTS:
-      # * gear: a Gear object
-      # * cart: a Cartridge object
-      #
-      # RETURNS:
-      # * a ResultIO of undetermined content
-      #
-      # NOTES:
-      # * calls run_cartridge_command
-      # * executes "show-port" action
-      # * method on Gear or Cart?
-      #
-      # Deprecated: remove from the REST API and then delete this.
-      def show_port(gear, cart)
-        ResultIO.new
-      end
-
-      #
       # Add an application alias to a gear
       #
       # INPUTS:
@@ -2152,67 +2068,6 @@ module OpenShift
         rpc_get_facts_for_all_nodes(name_list)
       end
 
-      #
-      # Execute an RPC call for the specified agent.
-      # If a server is supplied, only execute for that server.
-      #
-      # INPUTS:
-      # * agent: ??
-      # * servers: String|Array
-      # * force_rediscovery: Boolean
-      # * options: Hash
-      #
-      # RETURNS:
-      # * ResultIO
-      #
-      # RAISES:
-      # * OpenShift::NodeException
-      #
-      # NOTES:
-      # * connects, makes a request, closes connection.
-      # * uses MCollective::RPC::Client
-      # * THIS IS THE MEAT!
-      #
-      def self.rpc_exec(agent, servers=nil, force_rediscovery=false, options=rpc_options)
-
-        if servers
-          servers = Array(servers)
-        else
-          servers = []
-        end
-
-        # Setup the rpc client
-        rpc_client = MCollectiveApplicationContainerProxy.get_rpc_client(agent, options)
-
-        if !servers.empty?
-          Rails.logger.debug("DEBUG: rpc_exec: Filtering rpc_exec to servers #{servers.pretty_inspect}")
-          rpc_client.discover :nodes => servers
-        end
-
-        # Filter to the specified server
-        #if server
-        #  Rails.logger.debug("DEBUG: rpc_exec: Filtering rpc_exec to server #{server}")
-        #  rpc_client.identity_filter(server)
-        #end
-
-        if force_rediscovery
-          rpc_client.reset
-        end
-        Rails.logger.debug("DEBUG: rpc_exec: rpc_client=#{rpc_client}")
-
-        # Execute a block and make sure we disconnect the client
-        begin
-          result = yield rpc_client
-        ensure
-          rpc_client.disconnect
-        end
-
-        raise OpenShift::NodeException.new("Node execution failure (error getting result from node).  If the problem persists please contact Red Hat support.", 143) unless result
-
-        result
-      end
-
-      #
       # Set the district of a node
       #
       # INPUTS:
@@ -2264,80 +2119,6 @@ module OpenShift
       end
 
       protected
-
-      #
-      # Try some action until it passes or exceeds a maximum number of tries
-      #
-      # INPUTS:
-      # * action: Block: a code block or method with no arguments
-      # * num_tries: Integer
-      #
-      # RETURNS:
-      # * unknown: the result of the action
-      #
-      # RAISES:
-      # * Exception
-      #
-      # CATCHES:
-      # * Exception
-      #
-      # NOTES:
-      # * uses log_debug
-      # * just loops retrys
-      #
-      def do_with_retry(action, num_tries=2)
-        (1..num_tries).each do |i|
-          begin
-            yield
-            if (i > 1)
-              log_debug "DEBUG: Action '#{action}' succeeded on try #{i}.  You can ignore previous error messages or following mcollective debug related to '#{action}'"
-            end
-            break
-          rescue Exception => e
-            log_debug "DEBUG: Error performing #{action} on existing app on try #{i}: #{e.message}"
-            raise if i == num_tries
-          end
-        end
-      end
-
-      #
-      # Initializes the list of cartridges which are "standalone" or framework
-      #
-      # INPUTS:
-      #
-      # RETURNS:
-      # * Array of String
-      #
-      # SIDE EFFECTS:
-      # * initialize @framework_carts
-      #
-      # NOTES:
-      # * uses CartridgeCache
-      # * why not just ask the CartidgeCache?
-      # * that is: Why use an instance var at all?
-      #
-      def framework_carts(app=nil)
-        @framework_carts ||= CartridgeCache.cartridge_names('web_framework', app)
-      end
-
-      #
-      # Initializes the list of cartridges which are "standalone" or framework
-      #
-      # INPUTS:
-      #
-      # RETURNS:
-      # * Array of String
-      #
-      # SIDE EFFECTS:
-      # * initialize @embedded_carts
-      #
-      # NOTES:
-      # * Uses CartridgeCache
-      # * Why not just ask the CartridgeCache every time?
-      #
-      def embedded_carts(app=nil)
-        @embedded_carts ||= CartridgeCache.cartridge_names('embedded',app)
-      end
 
       #
       # Start a component service
@@ -2442,71 +2223,6 @@ module OpenShift
         cart = component.cartridge_name
 
         run_cartridge_command(cart, gear, "status", args)
-      end
-
-      #
-      # Wrap the log messages so it doesn't HAVE to be rails
-      #
-      # INPUTS:
-      # * message: String
-      #
-      def log_debug(message)
-        Rails.logger.debug message
-        puts message
-      end
-
-      #
-      # Wrap the log messages so it doesn't HAVE to be rails
-      #
-      # INPUTS:
-      # * message: String
-      #
-      def log_error(message)
-        Rails.logger.error message
-        puts message
-      end
-
-      #
-      #
-      # INPUTS:
-      # * cartridge: String, a cartridge name
-      # * action: String, and action name
-      # * args: Hash: command arguments
-      # * long_debug_output: Boolean
-      #
-      # RETURNS:
-      # *
-      #
-      # NOTES:
-      # * "cartridge_do" is a catch-all agent message handler
-      # * the real switches are the cartridge and action arguments
-      # * uses MCollective::RPC::Client
-      #
-      def execute_direct(cartridge, action, args, log_debug_output=true)
-        if not args.has_key?('--cart-name')
-          args['--cart-name'] = cartridge
-        end
-
-        mc_args = { :cartridge => cartridge,
-                    :action => action,
-                    :args => args }
-
-        start_time = Time.now
-        options = MCollectiveApplicationContainerProxy.rpc_options
-        rpc_client = MCollectiveApplicationContainerProxy.get_rpc_client('openshift', options)
-        result = nil
-        begin
-          Rails.logger.debug "DEBUG: rpc_client.custom_request('cartridge_do', #{mc_args.inspect}, #{@id}, {'identity' => #{@id}}) (Request ID: #{Thread.current[:user_action_log_uuid]})"
-          result = rpc_client.custom_request('cartridge_do', mc_args, @id, {'identity' => @id})
-          Rails.logger.debug "DEBUG: #{result.inspect} (Request ID: #{Thread.current[:user_action_log_uuid]})" if log_debug_output
-        rescue => e
-          Rails.logger.error("Error processing custom_request for action #{action}: #{e.message}")
-          Rails.logger.error(e.backtrace)
-        ensure
-          rpc_client.disconnect
-        end
-        Rails.logger.debug "DEBUG: MCollective Response Time (execute_direct: #{action}): #{Time.new - start_time}s  (Request ID: #{Thread.current[:user_action_log_uuid]})" if log_debug_output
-        result
       end
 
       #
@@ -2776,421 +2492,6 @@ module OpenShift
         server_identities
       end
 
-      #
-      # ???
-      #
-      # INPUTS:
-      # * node_profile: String identifier for a set of node characteristics
-      # * district_uuid: String identifier for the district
-      # * least_preferred_server_identities: list of server identities that are least preferred. These could be the ones that won't allow the gear group to be highly available
-      # * force_rediscovery: Boolean
-      # * gear_exists_in_district: Boolean - true if the gear belongs to a node in the same district
-      # * required_uid: String - the uid that is required to be available in the destination district
-      #
-      # RETURNS:
-      # * Array: [server, capacity, district]
-      #
-      # NOTES:
-      # * are the return values String?
-      #
-      # VALIDATIONS:
-      # * If gear_exists_in_district is true, then required_uid cannot be set and has to be nil
-      # * If gear_exists_in_district is true, then district_uuid must be passed and cannot be nil
-      #
-      def self.rpc_find_available(node_profile=nil, district_uuid=nil, least_preferred_server_identities=nil, force_rediscovery=false, gear_exists_in_district=false, required_uid=nil)
-
-        district_uuid = nil if district_uuid == 'NONE'
-
-        # validate to ensure incompatible parameters are not passed
-        if gear_exists_in_district
-          if required_uid or district_uuid.nil?
-            raise OpenShift::UserException.new("Incompatible parameters being passed for finding available node within the same district", 1)
-          end
-        end
-
-        require_specific_district = !district_uuid.nil?
-        require_district = require_specific_district
-        prefer_district = require_specific_district
-        unless require_specific_district
-          if Rails.configuration.msg_broker[:districts][:enabled] && (!district_uuid || district_uuid == 'NONE')
-            prefer_district = true
-            if Rails.configuration.msg_broker[:districts][:require_for_app_create]
-              require_district = true
-            end
-          end
-        end
-        require_district = true if required_uid
-        current_server, current_capacity = nil, nil
-        server_infos = []
-
-        # First find the most available nodes and match
-        # to their districts.  Take out the almost full nodes if possible and return one of
-        # the nodes within a district with a lot of space.
-        additional_filters = [{:fact => "active_capacity",
-                               :value => '100',
-                               :operator => "<"}]
-
-        if require_specific_district || require_district
-          additional_filters.push({:fact => "district_active",
-                                   :value => true.to_s,
-                                   :operator => "=="})
-        end
-
-        if require_specific_district
-          additional_filters.push({:fact => "district_uuid",
-                                   :value => district_uuid,
-                                   :operator => "=="})
-        elsif require_district
-          additional_filters.push({:fact => "district_uuid",
-                                   :value => "NONE",
-                                   :operator => "!="})
-        elsif !prefer_district
-          additional_filters.push({:fact => "district_uuid",
-                                   :value => "NONE",
-                                   :operator => "=="})
-        end
-
-        if node_profile && Rails.configuration.msg_broker[:node_profile_enabled]
-          additional_filters.push({:fact => "node_profile",
-                                   :value => node_profile,
-                                   :operator => "=="})
-        end
-
-        # Get the districts
-        districts = prefer_district ? District.find_all : [] # candidate for caching
-
-        # Get the active % on the nodes
-        rpc_opts = nil
-        rpc_get_fact('active_capacity', nil, force_rediscovery, additional_filters, rpc_opts) do |server, capacity|
-          found_district = false
-          districts.each do |district|
-            if district.server_identities_hash.has_key?(server)
-              next if required_uid and !district.available_uids.include?(required_uid)
-              if (gear_exists_in_district || district.available_capacity > 0) && district.server_identities_hash[server]["active"]
-                server_infos << [server, capacity.to_f, district]
-              end
-              found_district = true
-              break
-            end
-          end
-          if !found_district && !require_district # Districts aren't required in this case
-            server_infos << [server, capacity.to_f]
-          end
-        end
-        if require_district && server_infos.empty?
-          raise OpenShift::NodeException.new("No district nodes available.", 140)
-        end
-        unless server_infos.empty?
-          # Remove the least preferred servers from the list, ensuring there is at least one server remaining
-          server_infos.delete_if { |server_info| server_infos.length > 1 && least_preferred_server_identities.include?(server_info[0]) } if least_preferred_server_identities
-
-          # Remove any non districted nodes if you prefer districts
-          if prefer_district && !require_district && !districts.empty?
-            has_districted_node = false
-            server_infos.each do |server_info|
-              if server_info[2]
-                has_districted_node = true
-                break
-              end
-            end
-            server_infos.delete_if { |server_info| !server_info[2] } if has_districted_node
-          end
-
-          # Sort by node available capacity and take the best half
-          server_infos = server_infos.sort_by { |server_info| server_info[1] }
-          server_infos = server_infos.first([4, (server_infos.length / 2).to_i].max) # consider the top half and no less than min(4, the actual number of available)
-
-          # Sort by district available capacity and take the best half
-          server_infos = server_infos.sort_by { |server_info| (server_info[2] && server_info[2].available_capacity) ? server_info[2].available_capacity : 1 }
-          server_infos = server_infos.last([4, (server_infos.length / 2).to_i].max) # consider the top half and no less than min(4, the actual number of available)
-        end
-
-        current_district = nil
-        unless server_infos.empty?
-          # Randomly pick one of the best options
-          server_info = server_infos[rand(server_infos.length)]
-          current_server = server_info[0]
-          current_capacity = server_info[1]
-          current_district = server_info[2]
-          Rails.logger.debug "Current server: #{current_server} active capacity: #{current_capacity}"
-        end
-
-        return current_server, current_capacity, current_district
-      end
-
-      #
-      # Return a single node matching a given profile
-      #
-      # INPUTS:
-      # * node_profile: Object?
-      #
-      # RETURNS:
-      # * String: server name?
-      #
-      # RAISES:
-      # * OpenShift::NodeException
-      #
-      # NOTES:
-      # * Query facters from every node and filter on server side
-      # * uses MCollective::RPC::Client
-      #
-      def self.rpc_find_one(node_profile=nil)
-        current_server = nil
-        additional_filters = []
-
-        if Rails.configuration.msg_broker[:node_profile_enabled]
-          if node_profile
-            additional_filters.push({:fact => "node_profile",
-                                     :value => node_profile,
-                                     :operator => "=="})
-          end
-        end
-
-        options = MCollectiveApplicationContainerProxy.rpc_options
-        options[:filter]['fact'] = options[:filter]['fact'] + additional_filters
-        options[:mcollective_limit_targets] = "1"
-
-        rpc_client = MCollectiveApplicationContainerProxy.get_rpc_client('rpcutil', options)
-        begin
-          rpc_client.get_fact(:fact => 'public_hostname') do |response|
-            raise OpenShift::NodeException.new("No nodes found.  If the problem persists please contact Red Hat support.", 140) unless Integer(response[:body][:statuscode]) == 0
-            current_server = response[:senderid]
-          end
-        ensure
-          rpc_client.disconnect
-        end
-        return current_server
-      end
-
-      #
-      # Make a deep copy of the RPC options hash
-      #
-      # INPUTS:
-      #
-      # RETURNS:
-      # * Object
-      #
-      # NOTES:
-      # * Simple copy by Marshall load/dump
-      #
-      def self.rpc_options
-        # Make a deep copy of the default options
-        Marshal::load(Marshal::dump(Rails.configuration.msg_broker[:rpc_options]))
-      end
-
-      #
-      # Return the value of the MCollective response
-      # for both a single result and a multiple result
-      # structure
-      #
-      # INPUTS:
-      # * response: an MCollective::Response object
-      #
-      # RETURNS:
-      # * String: value string
-      #
-      # NOTES:
-      # * returns value from body or data
-      #
-      def self.rvalue(response)
-        result = nil
-
-        if response[:body]
-          result = response[:body][:data][:value]
-        elsif response[:data]
-          result = response[:data][:value]
-        end
-
-        result
-      end
-
-      #
-      # true if the response indicates success
-      #
-      # INPUTS:
-      # * response
-      #
-      # RETURNS:
-      # * Boolean
-      #
-      # NOTES:
-      # * method on custom response object?
-      #
-      def rsuccess(response)
-        response[:body][:statuscode].to_i == 0
-      end
-
-      #
-      # Returns the fact value from the specified server.
-      # Yields to the supplied block if there is a non-nil
-      # value for the fact.
-      #
-      # INPUTS:
-      # * fact: String - a fact name
-      # * servers: String|Array - a node name or an array of node names
-      # * force_rediscovery: Boolean
-      # * additional_filters: ?
-      # * custom_rpmc_opts: Hash?
-      #
-      # RETURNS:
-      # * String?
-      #
-      # NOTES:
-      # * uses rpc_exec
-      #
-
-      def self.rpc_get_fact(fact, servers=nil, force_rediscovery=false, additional_filters=nil, custom_rpc_opts=nil)
-        result = nil
-        options = custom_rpc_opts ? custom_rpc_opts : MCollectiveApplicationContainerProxy.rpc_options
-        options[:filter]['fact'] = options[:filter]['fact'] + additional_filters if additional_filters
-
-        Rails.logger.debug("DEBUG: rpc_get_fact: fact=#{fact}")
-        rpc_exec('rpcutil', servers, force_rediscovery, options) do |client|
-          client.get_fact(:fact => fact) do |response|
-            next unless Integer(response[:body][:statuscode]) == 0
-
-            # Yield the sender and the value to the block
-            result = rvalue(response)
-            yield response[:senderid], result if result
-          end
-        end
-
-        result
-      end
-
-      #
-      # Given a known fact and node, get a single fact directly.
-      # This is significantly faster then the get_facts method
-      # If multiple nodes of the same name exist, it will pick just one
-      #
-      # INPUTS:
-      # * fact: String
-      #
-      # RETURNS:
-      # * String
-      #
-      # RAISES:
-      # * OpenShift::NodeException
-      #
-      # NOTES
-      # * uses MCollectiveApplicationContainerProxy.rpc_options
-      # * uses MCollective::RPC::Client
-      #
-      def rpc_get_fact_direct(fact)
-          options = MCollectiveApplicationContainerProxy.rpc_options
-
-          rpc_client = MCollectiveApplicationContainerProxy.get_rpc_client('rpcutil', options)
-          begin
-            result = rpc_client.custom_request('get_fact', {:fact => fact}, @id, {'identity' => @id})[0]
-            if (result && defined? result.results && result.results.has_key?(:data))
-              value = result.results[:data][:value]
-            else
-              raise OpenShift::NodeException.new("Node execution failure (error getting fact).  If the problem persists please contact Red Hat support.", 143)
-            end
-          ensure
-            rpc_client.disconnect
-          end
-
-          return value
-      end
-
-      #
-      # Given a list of facts, get the facts directly for instance's node.
-      # This is significantly faster then the get_facts method.
-      # If multiple nodes of the same name exist, it will pick just one.
-      #
-      # INPUTS:
-      # * facts: Enumerable of Strings (fact names)
-      #
-      # RETURNS:
-      # * Map of fact name to fact value for this instance's node
-      #
-      # RAISES:
-      # * OpenShift::NodeException
-      #
-      # NOTES
-      # * uses MCollectiveApplicationContainerProxy.rpc_options
-      # * uses MCollective::RPC::Client
-      #
-      def rpc_get_facts_direct(facts)
-          options = MCollectiveApplicationContainerProxy.rpc_options
-
-          rpc_client = MCollectiveApplicationContainerProxy.get_rpc_client('openshift', options)
-          begin
-            result = rpc_client.custom_request('get_facts', {:facts => facts}, @id, {'identity' => @id})[0]
-            if (result && defined? result.results && result.results.has_key?(:data))
-              value = result.results[:data][:output]
-            else
-              raise OpenShift::NodeException.new("Node execution failure (error getting facts).  If the problem persists please contact Red Hat support.", 143)
-            end
-          ensure
-            rpc_client.disconnect
-          end
-
-          return value
-      end
-
-      #
-      # Given a list of facts, get those facts for all nodes that respond.
-      #
-      # INPUTS:
-      # * facts: Enumerable of Strings (fact names)
-      #
-      # RETURNS:
-      # * Map of Fact to String
-      #
-      # RAISES:
-      # * OpenShift::NodeException
-      #
-      # NOTES
-      # * uses MCollectiveApplicationContainerProxy.rpc_options
-      # * uses MCollective::RPC::Client
-      #
-      def self.rpc_get_facts_for_all_nodes(fact_list)
-        node_fact_map = {}
-        rpc_exec('openshift', nil, true) do |client|
-          client.get_facts(:facts => fact_list) do |response|
-            if response[:body][:statuscode] == 0
-              fact_map = response[:body][:data][:output]
-              sender = response[:senderid]
-              fact_map[:id] = sender
-              node_fact_map[sender] = fact_map
-            end
-          end
-        end
-        return node_fact_map
-      end
-
-      #
-      # Get mcollective rpc client. For errors, convert generic exception
-      # to NodeException.
-      #
-      # INPUTS:
-      # * agent: String (??)
-      # * options: Hash
-      #
-      # RETURNS:
-      # * MCollective::RPC::Client
-      #
-      # RAISES:
-      # * OpenShift::NodeException
-      #
-      # NOTES
-      # * Uses MCollective::RPC::Client
-      #
-      def self.get_rpc_client(agent, options)
-          flags = { :options => options, :exit_on_failure => false }
-
-          begin
-            rpc_client = rpcclient(agent, flags)
-          rescue Exception => e
-            raise OpenShift::NodeException.new(e)
-      end
-
-          return rpc_client
-      end
-
-      #
       # Retrieve all gear IDs from all nodes (implementation)
       #
       # INPUTS:
@@ -3277,48 +2578,6 @@ module OpenShift
           end
         end
         return [gear_sshkey_map, sender_list]
-      end
-
-      #
-      # <<implementation>>
-      # <<class method>>
-      #
-      # Execute a set of operations on a node in parallel
-      #
-      # INPUTS:
-      # * handle: Hash ???
-      #
-      # RETURNS:
-      # * ???
-      #
-      # NOTES:
-      # * uses MCollectiveApplicationContainerProxy.sanitize_result
-      # * uses MCollectiveApplicationContainerProxy.rpc_options
-      # * uses MCollective::RPC::Client
-      #
-      def self.execute_parallel_jobs_impl(handle)
-        if handle && !handle.empty?
-          start_time = Time.new
-          begin
-            options = MCollectiveApplicationContainerProxy.rpc_options
-            rpc_client = MCollectiveApplicationContainerProxy.get_rpc_client('openshift', options)
-            mc_args = handle.clone
-            identities = handle.keys
-            rpc_client.custom_request('execute_parallel', mc_args, identities, {'identity' => identities}).each { |mcoll_reply|
-              if mcoll_reply.results[:statuscode] == 0
-                output = mcoll_reply.results[:data][:output]
-                exitcode = mcoll_reply.results[:data][:exitcode]
-                sender = mcoll_reply.results[:sender]
-                Rails.logger.debug("DEBUG: Output of parallel execute: #{output}, exitcode: #{exitcode}, from: #{sender}  (Request ID: #{Thread.current[:user_action_log_uuid]})")
-
-                handle[sender] = output if exitcode == 0
-              end
-            }
-          ensure
-            rpc_client.disconnect
-          end
-          Rails.logger.debug "DEBUG: MCollective Response Time (execute_parallel): #{Time.new - start_time}s  (Request ID: #{Thread.current[:user_action_log_uuid]})"
-        end
       end
     end
 end

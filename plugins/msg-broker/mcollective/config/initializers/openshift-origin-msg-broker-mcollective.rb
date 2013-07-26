@@ -31,13 +31,17 @@ Broker::Application.configure do
       :node_profile_enabled => conf.get_bool("NODE_PROFILE_ENABLED", "false"),
       :mock => {
         :enabled => conf.get_bool("MOCK_ENABLED", "false"),
+        :dist_base_name => conf.get("MOCK_DISTRICT_BASE_NAME", "mockdist"),
         :node_base_name => conf.get("MOCK_NODE_BASE_NAME", "mocknode"),
+        :app_base_name => conf.get("MOCK_APP_BASE_NAME", "mockapp"),
+        :user_base_name => conf.get("MOCK_USER_BASE_NAME", "mockuser"),
       },
     }
 
     if config.msg_broker[:mock][:enabled]
       interface = OpenShift::ApplicationContainerProxy
-      raise "Mcollective proxy should have loaded before Mock proxy" if interface.provider == interface
+      #raise "Mcollective proxy should have loaded before Mock proxy" if interface.provider == interface
+      require 'openshift/mock_application_container_proxy'
       interface.provider = OpenShift::MockApplicationContainerProxy
     end
   end

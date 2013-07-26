@@ -23,3 +23,23 @@ MCOLLECTIVE_CONFIG="/etc/mcollective/client.cfg"
 # a false value means gear profiles are ignored and gears are placed arbitrarily.
 NODE_PROFILE_ENABLED=true
 
+#########################################################
+# Settings for mocking with fake data
+# If true, then mock apps can be administered without going through mcollective:
+MOCK_ENABLED=false
+
+# Create and delete mock districts with names beginning with this:
+# Fake or real nodes can be put in these.
+MOCK_DISTRICT_BASE_NAME="mockdist"
+
+# Create and delete mock nodes with names beginning with this:
+# Gears from mock apps can only go on mock nodes.
+# Gears from real apps can only go on real nodes.
+MOCK_NODE_BASE_NAME="mocknode"
+
+# All apps named beginning with this will be mocked:
+MOCK_APP_BASE_NAME="mockapp"
+
+# Create and delete mock users and domains with names beginning with this:
+MOCK_USER_BASE_NAME="mockuser"
+
