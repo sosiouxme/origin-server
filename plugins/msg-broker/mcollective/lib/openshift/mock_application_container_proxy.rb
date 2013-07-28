@@ -35,9 +35,9 @@ module OpenShift
     # * district: <type> - a classifier for app placement
     #
     def initialize(id=nil, district=nil, mock=nil)
-      @is_mock = id && self.class.is_mock_node?(id)
-      @actual_proxy = mock[:actual] if @mock = mock
-      @actual_proxy ||= @@actual_proxy.new(id, district)
+      @is_mock = id && is_mock_node?(id)
+      mock ? (@mock = mock || {method: :none})
+           : (@proxy = @@actual_proxy.new(id, district))
       @id = id
       @district = district
     end
@@ -49,6 +49,7 @@ module OpenShift
     # pass class methods to real proxy class if we don't override
     def self.method_missing(meth, *args, &block)
       Rails.logger.debug "DEBUG: MockAppProxy: proxying missing class method #{meth} to actual proxy"
+      resolve_mock_nature(false)
       #define_singleton_method(meth) { @@actual_proxy.send(meth, *args, &block) }.call(*args,&block)
       output = @@actual_proxy.send(meth, *args, &block)
       Rails.logger.debug "DEBUG: MockAppProxy: #{meth} returned: \n#{output.inspect}"
@@ -57,6 +58,7 @@ module OpenShift
     # pass instance methods to real proxy instance if we don't override
     def method_missing(meth, *args, &block)
       Rails.logger.debug "DEBUG: MockAppProxy: proxying missing instance method #{meth} to actual proxy"
+      resolve_mock_nature(false)
       #self.class.instance_eval { define_method(meth) { @actual_proxy.send(meth, *args, &block) } }
       output = @actual_proxy.send(meth, *args, &block)
       Rails.logger.debug "DEBUG: MockAppProxy: #{meth} returned: \n#{output.inspect}"
@@ -67,28 +69,34 @@ module OpenShift
     # then call the method with _mock; else send to the real proxy.
     %w[ get_quota ].each do |meth|
       define_method meth.to_sym, ->(*args, &block) do
+        resolve_mock_nature(false)
         @is_mock ? send("#{meth}_mock".to_sym, *args, &block)
                  : @actual_proxy.send(meth.to_sym, *args, &block)
       end
     end
 
-    # decide if a thing is supposed to be a mock
+    ismock = Module.new do
+      # decide if a thing is supposed to be a mock
 
-    def self.is_mock_dist?(name)
-      name.start_with?(CONF[:dist_base_name])
-    end
+      def self.is_mock_dist?(name)
+        name.start_with?(CONF[:dist_base_name])
+      end
 
-    def self.is_mock_node?(name)
-      name.start_with?(CONF[:node_base_name])
-    end
+      def self.is_mock_node?(name)
+        name.start_with?(CONF[:node_base_name])
+      end
 
-    def self.is_mock_app?(name)
-      name.start_with?(CONF[:app_base_name])
-    end
+      def self.is_mock_app?(name)
+        name.start_with?(CONF[:app_base_name])
+      end
 
-    def self.is_mock_user?(name)
-      name.start_with?(CONF[:user_base_name])
+      def self.is_mock_user?(name)
+        name.start_with?(CONF[:user_base_name])
+      end
     end
+    include ismock  # these should be instance methods
+    extend ismock   # ... and class methods
+
 
     # ############################################
     # Mock proxy class methods
@@ -99,23 +107,42 @@ module OpenShift
     # Also get a mock node in case we need that.
     def self.find_available_impl(node_profile=nil, district_uuid=nil, non_ha_server_identities=nil)
       actual = @@actual_proxy.find_available_impl(node_profile, district_uuid, non_ha_server_identities)
-      # TODO: actually find mock node/dist
-      self.new(nil, nil, { actual_proxy: actual, mock_node: CONF[:node_base_name], mock_dist: CONF[:dist_base_name]} )
+      self.new(nil, nil, { method: :find_available_impl,
+                           node_profile: node_profile,
+                           district_uuid: district_uuid,
+                           non_ha_server_identities: non_ha_server_identities,
+                         } )
     end
 
     def self.find_one_impl(node_profile=nil)
       actual = @@actual_proxy.find_one_impl(node_profile)
       # TODO: actually find mock node/dist
-      self.new(nil, nil, { actual_proxy: actual, mock_node: CONF[:node_base_name], mock_dist: CONF[:dist_base_name]} )
+      self.new(nil, nil, { method: :find_one_impl,
+                           node_profile: node_profile,
+                         } )
     end
-    def mock_if_not_set
-      # if a node has already been determined, use that.
-      return if @id
-      # otherwise, use the mock node
-      @is_mock = true
-      @id = @mock[:mock_node]
-      @district = @mock[:mock_dist]
+    def resolve_mock_nature(suggest_mock = false)
+      # if a proxy has already been determined, use that.
+      return if @proxy
+      # otherwise, use the suggestion
+      if suggest_mock
+        # TODO: actually find mock node/dist
+        @is_mock = true
+        @proxy = self
+        @id = @mock[:mock_node]
+        @district = @mock[:mock_dist]
+      else
+        @proxy = case @mock[:method]
+                 when :find_available_impl
+                   @@actual_proxy.find_available_impl(@mock[:node_profile], district_uuid, non_ha_server_identities)
+                 when :find_one_impl
+                   @@actual_proxy.find_one_impl(node_profile)
+                 else
+                   raise "Error: no mock method given"
+                 end
+      end
     end
+
 
 
     # ############################################
