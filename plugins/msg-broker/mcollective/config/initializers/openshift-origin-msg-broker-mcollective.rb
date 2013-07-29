@@ -42,7 +42,7 @@ Broker::Application.configure do
       interface = OpenShift::ApplicationContainerProxy
       #raise "Mcollective proxy should have loaded before Mock proxy" if interface.provider == interface
       require 'openshift/mock_application_container_proxy'
-      interface.provider = OpenShift::MockApplicationContainerProxy
+      interface.provider = OpenShift::MockApplicationContainerProxy::Resolver
     end
   end
 end

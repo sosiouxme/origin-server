@@ -48,6 +48,24 @@ module OpenShift
     # without any way to know what it will be used for, and sometimes we will not
     # want to mock calls (e.g. getting the cartridge cache, creating a real app).
     #
+    # The way this works is:
+    #
+    # * At the first point where Resolver can determine whether an instance will
+    #   be a real proxy or mock, that decision is stored and used.
+    #
+    # * When a class method is intended to return an instance, if it doesn't have
+    #   the ability to determine whether to mock the call or not, it returns an
+    #   instance of Resolver with two lambdas stored
+    #     - one for creating a real proxy with the given parameters,
+    #     - and one for creating a mock proxy with the parameters.
+    #
+    # * Whenever the first instance method is called that includes information
+    #   that can be used to resolve whether to mock or not (e.g. application name),
+    #   the appropriate lambda is called to create and use a proxy.
+    #
+    # * If an instance method is called before resolution and without resolving
+    #   information, then the real proxy is generated and stored.
+    #
     class Resolver < OpenShift::ApplicationContainerProxy
       include Common  # these should be instance methods
       extend Common   # ... and class methods
@@ -63,8 +81,8 @@ module OpenShift
       # * resolver: <Hash> - contains :real_proxy and :mock_proxy generator lambdas
       #
       def initialize(id=nil, district=nil, resolver=nil)
-        raise "Need an id or a resolver" unless id || resolver
-        return if @resolver = resolver
+        return if @resolver = resolver # use to resolve proxy later
+        raise "Need an id or a resolver" unless id
         # we have a node id, so we can resolve now whether it's mock
         real_proxy_lambda = lambda { REAL_PROXY.new(id, district) }
         @proxy = is_mock_node?(id) ? Mock.new(id, district, real_proxy_lambda)
@@ -76,20 +94,20 @@ module OpenShift
       # Also store requirements for a mock node in case we need that.
       def self.find_available_impl(*args)
         self.new(nil, nil, {
-                 real_proxy: lambda { @@real_proxy.find_available_impl(*args) },
+                 real_proxy: lambda { REAL_PROXY.find_available_impl(*args) },
                  mock_proxy: lambda { Mock.find_available_impl(*args) },
         } )
       end
 
       def self.find_one_impl(node_profile=nil)
         self.new(nil, nil, {
-                 real_proxy: lambda { @@real_proxy.find_one_impl(node_profile) },
+                 real_proxy: lambda { REAL_PROXY.find_one_impl(node_profile) },
                  mock_proxy: lambda { Mock.find_one_impl(node_profile) }
         } )
       end
 
       # Require the proxy to be resolved if it hasn't been;
-      # True means it should be a mock if we don't know otherwise.
+      # True means it should be a mock if we don't know otherwise (false is default).
       def resolve_mock_nature(suggest_mock = false)
         # if a proxy has already been determined, use that.
         return @proxy if @proxy
