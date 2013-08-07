@@ -1,5 +1,12 @@
 namespace :test do
 
+  Rake::TestTask.new :admin => ['test:prepare'] do |t|
+    t.libs << 'test'
+    t.test_files = FileList[
+      'test/unit/**/admin_*_test.rb'
+    ]
+  end
+
   Rake::TestTask.new :sanity => ['test:prepare'] do |t|
     t.libs << 'test'
     t.test_files = FileList[
