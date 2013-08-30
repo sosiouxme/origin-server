@@ -82,6 +82,9 @@
                   = "?"
             %td.suggestion-body          
               = render partial: partial, locals: {suggestion: suggestion, size: :full}
+              -  if Rails.env.development? && params[:raw]
+                - partial = suggestion_partial_for Admin::Suggestion::Base # generic
+                = render partial: partial, locals: {suggestion: suggestion, size: :full}
             %td.toggle
               %a{:href => "javascript:;", :title => "Collapse suggestion details", :suggestion_id => suggestion.id}
                 %i.icon-chevron-up

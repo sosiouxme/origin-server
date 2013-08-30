@@ -132,6 +132,7 @@ module Admin
           all1 = MN.new(contents: Container.new, scope:"general", nodes: nodes)
           all1.contents << MN.new(profile: profile, nodes: nodes.clone)
           all1.contents << MN.new(scope: "district", nodes: nodes.clone,
+                                  profile: profile,
                                   district_uuid: "test_dist_uuid",
                                   district_name: "test_dist")
           # more complicated - several nodes missing across profiles and districts
@@ -141,9 +142,11 @@ module Admin
           profile = self.test_profile + "2"
           all2.contents << MN.new(profile: profile, nodes: nodes.clone)
           all2.contents << MN.new(scope: "district", nodes: [nodes[0]],
+                                  profile: profile,
                                   district_uuid: "test_dist_uuid1",
                                   district_name: "test_dist1")
           all2.contents << MN.new(scope: "district", nodes: [nodes[1], nodes[2]],
+                                  profile: profile,
                                   district_uuid: "test_dist_uuid2",
                                   district_name: "test_dist2")
           Container.new + [all1, all2]
