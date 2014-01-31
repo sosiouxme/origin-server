@@ -97,7 +97,8 @@ Broker::Application.configure do
     :ha_dns_prefix => conf.get('HA_DNS_PREFIX', "ha-"),
     :ha_dns_suffix => conf.get('HA_DNS_SUFFIX', ""),
     :valid_ssh_key_types => OpenShift::Controller::Configuration.parse_list(conf.get('VALID_SSH_KEY_TYPES', nil)),
-    :allow_obsolete_cartridges => conf.get_bool('ALLOW_OBSOLETE_CARTRIDGES', "false")
+    :allow_obsolete_cartridges => conf.get_bool('ALLOW_OBSOLETE_CARTRIDGES', "false"),
+    :app_template_for => OpenShift::Controller::Configuration.parse_url_hash(conf.get('DEFAULT_APP_TEMPLATES', nil)),
   }
 
   config.auth = {

@@ -526,6 +526,11 @@ class Application
     group_overrides = CartridgeInstance.overrides_for(cartridges, self)
     self.validate_cartridge_instances!(cartridges)
 
+    # supply initial app template if configured in broker conf
+    template_for = Rails.application.config.openshift[:app_template_for]
+    init_git_url ||= cartridges.select {|c| c.is_web_framework?}.
+                     map {|c| template_for[c.name] || template_for[c.short_name] }.
+                     select.first
     add_features(cartridges.map(&:cartridge), group_overrides, init_git_url, user_env_vars)
 
   rescue => e
@@ -1894,7 +1899,7 @@ class Application
         component_ops[comp_spec][:adds].push add_component_op
         usage_op_prereq = [add_component_op._id.to_s]
 
-        # if this is a web_proxy, send any existing alias information to it 
+        # if this is a web_proxy, send any existing alias information to it
         if cartridge.is_web_proxy? and self.aliases.present?
           resend_aliases_op = ResendAliasesOp.new(gear_id: gear_id, fqdns: self.aliases.map {|app_alias| app_alias.fqdn}, prereq: [add_component_op._id.to_s])
           ops.push resend_aliases_op

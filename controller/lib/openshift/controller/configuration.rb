@@ -24,6 +24,19 @@ module OpenShift::Controller
         list.split(',').map(&:strip).map(&:presence).compact
       end
     end
-    
+
+    # Parses a whitespace-separated string with |-separated elements to a hash.
+    # So e.g.:
+    # first|http://first-url/ second|git://second-url/ =>
+    # {"first"=>"http://first-url/", "second"=>"git://second-url/"}
+    # Nil/empty input returns empty hash.
+    def self.parse_url_hash(str)
+      if str.nil? or str.empty?
+        Hash.new
+      else
+        Hash[str.split(/\s+/).collect {|el| name, url = el.split '|'}]
+      end
+    end
+
   end
 end
